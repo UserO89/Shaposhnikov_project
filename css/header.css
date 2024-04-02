@@ -1,0 +1,120 @@
+nav {
+    background: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    z-index: 1000;
+  }
+  nav li {
+    display: inline-block;
+    margin-right: 2px;
+    color: white;
+    padding: 1em;
+}
+  nav .mainMenu {
+    display: flex;
+    list-style: none;
+  }
+  nav .mainMenu li a {
+    display: inline-block;
+    padding: 15px 20px;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: rgb(255, 255, 255);
+    font-size: 18px;
+    border: 1px solid #000000;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+  }
+  nav .mainMenu li a:hover {
+    background: grey;
+  }
+  nav .openMenu {
+    font-size: 2rem;
+    margin: 20px;
+    display: none;
+    cursor: pointer;
+  }
+  nav .mainMenu .closeMenu,
+  .icons i {
+    font-size: 2rem;
+    display: none;
+    cursor: pointer;
+  }
+  .fa-facebook:hover {
+    color: rgb(0, 110, 255);
+  }
+  .fa-twitter:hover {
+    color: rgb(86, 154, 243);
+  }
+  .fa-instagram:hover {
+    color: rgb(255, 0, 191);
+  }
+  .fa-github:hover {
+    color: rgb(255, 123, 0);
+  }
+  nav img {
+    max-width: 40%;
+  }
+
+.slides-container {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+  }
+.slide, .slide img{
+    width:100%;
+    height: auto;
+    }
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    padding: 16px;
+    margin-top: -22px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.6s ease;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
+    }
+    
+.next {
+    right: 0;
+    border-radius: 3px 0 0 3px;
+    }
+.prev:hover, .next:hover {
+    background-color: rgba(0,0,0,0.8);
+    }
+.slide-text a{
+    color: white;
+    font-size: 5vw;
+    text-transform: uppercase;
+    font-weight: bold;
+    padding: 8px 12px;
+    position: absolute;
+    bottom: 50%;
+    max-width: 100%;
+    width:100%;
+    text-align: center;
+    align-items: center;
+    text-decoration: none;
+    }
+.slide-text a:hover {
+        color:grey;
+        transition: 0.5s;
+    }
+.fade {
+    animation-name: fade;
+    animation-duration: 1.5s;
+    }
+    @keyframes fade {
+    from {opacity: .4}
+    to {opacity: 1}
+    }
