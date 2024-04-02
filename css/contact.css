@@ -1,0 +1,73 @@
+.contact {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+  
+  input[type="text"],
+  input[type="email"] {
+    width: 30%;
+    padding: 10px;
+    margin-bottom: 15px;
+    margin-top: 15px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  
+  input[type="checkbox"] {
+    margin-bottom: 20px;
+  }
+  .labe1 {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+
+  }
+  .thankyou {
+    text-align: center;
+    justify-content: center;
+    font-size: 40px;
+    align-items: center;
+    font-weight: bold;
+    margin-top: 200px;
+    margin-bottom: 250px;
+}
+.submitt{
+    margin-bottom: 150px;
+}
+footer{
+    padding-top: 50px;
+}
+select {
+    width: 200px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    appearance: none; /* Remove default arrow in some browsers */
+    background-color: white;
+    background-image: url('arrow-down.png'); /* Add a custom arrow-down icon */
+    background-size: 20px;
+    background-position: right 10px center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    margin-bottom: 15px;
+  }
+
+  select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.7);
+  }
+
+  select option {
+    font-size: 14px;
+  }
+  h1 {
+    font-size: 40px;
+    margin-bottom: 0px;
+    padding-bottom: 10px;
+    padding-top: 50px;
+  }
