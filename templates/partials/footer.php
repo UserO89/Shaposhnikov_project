@@ -25,6 +25,6 @@
 </footer>
 <?php
       add_scripts();
-    ?>
+?>
 </body>
 </html>
