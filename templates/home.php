@@ -4,7 +4,7 @@
 <main>
     <section class="slides-container">
         <div class="slide fade">
-            <img src="img/banner1.jpg">
+            <img src="../assests/img/banner1.jpg">
                 <div class="slide-text">
                  <a href="web.html">Web - programming</a>
                 </div>
@@ -12,7 +12,7 @@
         
         <div class="slide fade">
         
-            <img src="img/database.jpg">
+            <img src="../assests/img/database.jpg">
                 <div class="slide-text">
                     <a href="database.html">Data base</a>
                        
@@ -21,7 +21,7 @@
 
         <div class="slide fade">
         
-            <img src="img/banner2.jpg">
+            <img src="../assests/img/banner2.jpg">
                 <div class="slide-text">
                     <a href="soft.html">Software development</a>
                        
@@ -29,7 +29,7 @@
         </div>
         
         <div class="slide fade" >
-            <img src="img/banner3.jpg">
+            <img src="../assests/img/banner3.jpg">
             <div class="slide-text">
                 <a href="gamedev.html">Game development</a>
             </div>

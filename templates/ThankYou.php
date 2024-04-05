@@ -1,5 +1,6 @@
 <?php
     include_once('partials/header.php');
+    require('../_inc/functions.php');
 ?>   
     <main>
 
