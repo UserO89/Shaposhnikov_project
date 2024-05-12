@@ -1,0 +1,21 @@
+.course {
+    background-color: rgb(232, 240, 240);
+    border: 1px;
+    border-radius: 15px;
+    width: 75%;
+}
+.course .first, h1 {
+    float: left;
+    padding-left: 2%;
+    width: 40%;
+}
+.course .second {
+    float: right;
+    padding-bottom: 4%;
+    width: 60%;
+}
+.course .second img {
+    width: 75%;
+    border: 1px;
+    border-radius: 15px;
+}

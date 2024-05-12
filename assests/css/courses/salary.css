@@ -1,0 +1,39 @@
+.salary {
+    width: 50%; 
+}
+.salary h1 {
+    float: none;
+    padding-bottom: 5%;
+}
+.salary ul{
+    display: flex;
+    gap: 15%;
+    float:left;
+}
+.salary ul li {
+    font-weight: bolder;
+    font-size: larger;
+    border: 1px;
+    border-radius: 15px;
+    background-color: rgb(224, 224, 224);
+    padding: 30px;
+    align-items:normal;
+}
+.salary ul li a{
+    font-weight:lighter ;
+}
+.salary .li1 {
+    padding-top: 3%;
+}
+.salary .li2 {
+    padding-top: 10%;
+}
+.salary .li3 {
+    padding-top: 30%;
+}
+.superb {
+    padding-bottom: 20%;
+}
+.superb a {
+    transform: scale(1.2);
+}

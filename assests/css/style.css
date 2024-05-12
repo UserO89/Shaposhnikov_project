@@ -2,6 +2,10 @@
     box-sizing: border-box;
     margin: 0px;
     padding: 0px;
+    list-style: none;
+  }
+  a {
+    text-decoration: none; 
   }
   body {
     font-family: Arial, sans-serif;
@@ -9,75 +13,13 @@
   main {
     padding-top: 75px;
   }
-  nav {
-    background: rgb(0, 0, 0);
-    color: rgb(255, 255, 255);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: fixed;
-    z-index: 1000;
-    width: 100%;
 
-  }
-  nav li {
-    display: inline-block;
-    margin-right: 2px;
-    color: white;
-    padding: 1em;
-}
-  nav .mainMenu {
-    display: flex;
-    list-style: none;
-  }
-  nav .mainMenu li a {
-    display: inline-block;
-    padding: 15px 20px;
-    text-decoration: none;
-    text-transform: uppercase;
-    font-weight: bold;
-    color: rgb(255, 255, 255);
-    font-size: 18px;
-    border: 1px solid #000000;
-    border-radius: 8px;
-    transition: background-color 0.3s;
-  }
-  nav .mainMenu li a:hover {
-    background: grey;
-  }
-  nav .openMenu {
-    font-size: 2rem;
-    margin: 20px;
-    display: none;
-    cursor: pointer;
-  }
-  nav .mainMenu .closeMenu,
-  .icons i {
-    font-size: 2rem;
-    display: none;
-    cursor: pointer;
-  }
-  .fa-facebook:hover {
-    color: rgb(0, 110, 255);
-  }
-  .fa-twitter:hover {
-    color: rgb(86, 154, 243);
-  }
-  .fa-instagram:hover {
-    color: rgb(255, 0, 191);
-  }
-  .fa-github:hover {
-    color: rgb(255, 123, 0);
-  }
-  nav img {
-    max-width: 40%;
-  }
-
-.slides-container {
+  .slides-container {
     position: relative;
     width: 100%;
     max-width: 100%;
     height: auto;
+    z-index: 0;
   }
 .slide, .slide img{
     width:100%;
@@ -120,7 +62,7 @@
     text-decoration: none;
     }
 .slide-text a:hover {
-        color:grey;
+        color:rgb(139, 95, 181);
         transition: 0.5s;
     }
 .fade {
@@ -130,8 +72,7 @@
     @keyframes fade {
     from {opacity: .4}
     to {opacity: 1}
-    }
-    
+    }    
                                                         /*Slider*/
 .section2{
     justify-content: center;
