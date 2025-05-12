@@ -1,0 +1,27 @@
+[
+    {
+      "title": "Web Development Bootcamp",
+      "desc": "Learn HTML, CSS, JavaScript, and more."
+    },
+    {
+      "title": "Python for Data Science",
+      "desc": "Analyze data, build models, and automate."
+    },
+    {
+      "title": "UI/UX Design Essentials",
+      "desc": "Master design principles and tools like Figma."
+    },
+    {
+      "title": "Digital Marketing Basics",
+      "desc": "SEO, PPC, email marketing and analytics."
+    },
+    {
+      "title": "React & Frontend Engineering",
+      "desc": "Build dynamic UIs with React and APIs."
+    },
+    {
+      "title": "Project Management",
+      "desc": "Learn Agile, Scrum, and team leadership."
+    }
+  ]
+  
