@@ -19,7 +19,11 @@ body {
     transform: scale(1.03);
   }
   .card-title {
-    color: #0d6efd;
+    background: linear-gradient(90deg, #2563eb 70%, #a21caf 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
     font-weight: bold;
   }
   .btn-outline-primary {
