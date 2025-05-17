@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Course Company</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="../assests/css/style.css">
+
   <style>
     .hero {
       height: 60vh;
@@ -39,20 +32,10 @@
   </section>
 
   <!-- Main Content -->
+  
   <main class="container my-5">
-    <h2 class="text-center mb-4">Featured Courses</h2>
-    <div id="courseCarousel" class="carousel slide" data-bs-ride="carousel">
-      <div class="carousel-inner" id="carouselContent"></div>
-      <button class="carousel-control-prev" type="button" data-bs-target="#courseCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-      </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#courseCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon"></span>
-      </button>
-    </div>
-
-    <!-- About Us -->
-    <section class="my-5 px-3 py-4 bg-white rounded shadow-sm">
+        <!-- About Us -->
+        <section class="my-5 px-3 py-4 bg-white rounded shadow-sm">
       <div class="row align-items-center">
         <div class="col-md-6">
           <img src="../assests/img/team.png" alt="Our Team" class="img-fluid rounded">
@@ -68,6 +51,16 @@
         </div>
       </div>
     </section>
+    <h2 class="text-center mb-4">Featured Courses</h2>
+    <div id="courseCarousel" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner" id="carouselContent"></div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#courseCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#courseCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    </div>
 
     <!-- Testimonials -->
     <section class="my-5">
