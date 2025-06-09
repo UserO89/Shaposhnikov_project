@@ -1,34 +1,43 @@
 <?php
 session_start();
-
-$dsn = 'mysql:host=localhost;dbname=courseco;charset=utf8mb4';
-$db_user = 'root';
-$db_pass = '';
-
-try {
-  $pdo = new PDO($dsn, $db_user, $db_pass, [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-  ]);
-} catch (PDOException $e) {
-  die('Database connection failed: ' . $e->getMessage());
-}
+require_once __DIR__ . '/../../Classes/Database.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $email = $_POST['email'] ?? '';
-  $password = $_POST['password'] ?? '';
+    $username = $_POST['username'] ?? '';
+    $password = $_POST['password'] ?? '';
 
-  $stmt = $pdo->prepare('SELECT * FROM users WHERE email = ?');
-  $stmt->execute([$email]);
-  $user = $stmt->fetch();
+    if (empty($username) || empty($password)) {
+        $_SESSION['error'] = "Please fill in all fields";
+        header("Location: " . $_SERVER['HTTP_REFERER']);
+        exit();
+    }
 
-  if ($user && password_verify($password, $user['password'])) {
-    $_SESSION['user'] = $user['email'];
-    header('Location: index.html');
-    exit();
-  } else {
-    $error = 'Invalid email or password';
-  }
+    try {
+        $db = new Database();
+        $pdo = $db->getConnection();
+
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
+        $stmt->execute([$username]);
+        $user = $stmt->fetch();
+
+        if ($user && password_verify($password, $user['password'])) {
+            $_SESSION['user'] = [
+                'id' => $user['id'],
+                'username' => $user['username'],
+                'email' => $user['email']
+            ];
+            header("Location: home.php");
+            exit();
+        } else {
+            $_SESSION['error'] = "Invalid username or password";
+            header("Location: " . $_SERVER['HTTP_REFERER']);
+            exit();
+        }
+    } catch (PDOException $e) {
+        $_SESSION['error'] = "Database error: " . $e->getMessage();
+        header("Location: " . $_SERVER['HTTP_REFERER']);
+        exit();
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -87,8 +96,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <?php endif; ?>
       <form method="POST" action="">
         <div class="mb-3">
-          <label for="email" class="form-label">Email address</label>
-          <input type="email" class="form-control" id="email" name="email" required>
+          <label for="username" class="form-label">Username</label>
+          <input type="text" class="form-control" id="username" name="username" required>
         </div>
         <div class="mb-3">
           <label for="password" class="form-label">Password</label>

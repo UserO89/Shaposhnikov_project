@@ -1,31 +1,23 @@
 <?php
-// Включаем отображение ошибок
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// Проверяем, что сессия запущена
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-require_once __DIR__ . '/../Classes/Auth.php';
-require_once __DIR__ . '/../Classes/Database.php';
-require_once __DIR__ . '/partials/header.php';
+require_once __DIR__ . '/../../Classes/Auth.php';
+require_once __DIR__ . '/../partials/header.php';
 
 // Проверка прав администратора
-// Auth::requireAdmin();
+Auth::requireAdmin();
 
 // Получение списка пользователей
 try {
     $db = new Database();
-    $conn = $db->getConnection();
-    $stmt = $conn->query("SELECT id, username, first_name, last_name, email, role, created_at FROM users ORDER BY created_at DESC");
+    $pdo = $db->getConnection();
+    
+    $stmt = $pdo->query("SELECT id, username, email, role, created_at FROM users ORDER BY created_at DESC");
     $users = $stmt->fetchAll();
+    
 } catch (PDOException $e) {
-    die("Database error: " . $e->getMessage());
+    $error = "Database error: " . $e->getMessage();
 }
 ?>
-<head>
+
 <main class="container my-5">
     <div class="row">
         <!-- Sidebar -->
@@ -89,8 +81,6 @@ try {
                             <thead>
                                 <tr>
                                     <th>Username</th>
-                                    <th>Name</th>
-                                    <th>Surname</th>
                                     <th>Email</th>
                                     <th>Role</th>
                                     <th>Registered</th>
@@ -101,8 +91,6 @@ try {
                                 <?php foreach ($users as $user): ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($user['username']); ?></td>
-                                    <td><?php echo htmlspecialchars($user['first_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($user['last_name']); ?></td>
                                     <td><?php echo htmlspecialchars($user['email']); ?></td>
                                     <td>
                                         <span class="badge bg-<?php echo $user['role'] === 'admin' ? 'danger' : 'primary'; ?>">
@@ -147,14 +135,6 @@ try {
                         <input type="text" class="form-control" id="username" name="username" required>
                     </div>
                     <div class="mb-3">
-                        <label for="first_name" class="form-label">First Name</label>
-                        <input type="text" class="form-control" id="first_name" name="first_name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="last_name" class="form-label">Last Name</label>
-                        <input type="text" class="form-control" id="last_name" name="last_name" required>
-                    </div>
-                    <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" name="email" required>
                     </div>
@@ -178,7 +158,7 @@ try {
 
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-</head>
+
 <style>
 .card {
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
@@ -220,4 +200,4 @@ function editUser(userId) {
 }
 </script>
 
-<?php require_once 'partials/footer.php'; ?> 
+<?php require_once '../partials/footer.php'; ?> 

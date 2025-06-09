@@ -1,28 +1,9 @@
 
-  <style>
-    .hero {
-      height: 60vh;
-      background-image: url('../assests/img/banner.jpg');
-      background-size: cover;
-      background-position: center;
-      color: white;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-    }
-    .hero h1 {
-      font-size: 3rem;
-    }
-    .hero p {
-      font-size: 1.25rem;
-    }
-  </style>
-</head>
-
+<head>
 <body>
-  <!-- Header -->
-  <div id="header">
-    <?php include 'partials/header.php'; ?>
-  </div>
-
+<?php
+require_once 'partials/header.php';
+?>
   <section class="hero text-center text-light d-flex align-items-center justify-content-center">
     <div>
       <h1 class="display-4">Master New Skills Online</h1>
@@ -138,5 +119,27 @@
         }
       });
   </script>
+  
+  <style>
+    .hero {
+      height: 60vh;
+      background-image: url('../assests/img/banner.jpg');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    }
+    .hero h1 {
+      font-size: 3rem;
+    }
+    .hero p {
+      font-size: 1.25rem;
+    }
+  </style>
 </body>
 </html>
+
+<?php
+require_once 'partials/footer.php';
+?>
+</head>
