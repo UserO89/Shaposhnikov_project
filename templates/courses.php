@@ -1,5 +1,5 @@
 <?php
-$courses = json_decode(file_get_contents('../assests/info.json'), true);
+$courses = json_decode(file_get_contents('../assets/info.json'), true);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -8,7 +8,7 @@ $courses = json_decode(file_get_contents('../assests/info.json'), true);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>All Courses - CourseCo</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="../assests/css/style.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
   <!-- Header -->

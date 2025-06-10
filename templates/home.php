@@ -1,28 +1,8 @@
 
-  <style>
-    .hero {
-      height: 60vh;
-      background-image: url('../assests/img/banner.jpg');
-      background-size: cover;
-      background-position: center;
-      color: white;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-    }
-    .hero h1 {
-      font-size: 3rem;
-    }
-    .hero p {
-      font-size: 1.25rem;
-    }
-  </style>
-</head>
-
 <body>
-  <!-- Header -->
-  <div id="header">
-    <?php include 'partials/header.php'; ?>
-  </div>
-
+<?php
+require_once 'partials/header.php';
+?>
   <section class="hero text-center text-light d-flex align-items-center justify-content-center">
     <div>
       <h1 class="display-4">Master New Skills Online</h1>
@@ -38,7 +18,7 @@
         <section class="my-5 px-3 py-4 bg-white rounded shadow-sm">
       <div class="row align-items-center">
         <div class="col-md-6">
-          <img src="../assests/img/team.png" alt="Our Team" class="img-fluid rounded">
+          <img src="../assets/img/team.png" alt="Our Team" class="img-fluid rounded">
         </div>
         <div class="col-md-6">
           <h3>About CourseCo</h3>
@@ -104,7 +84,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    fetch('../assests/info.json')
+    fetch('../assets/info.json')
       .then(res => res.json())
       .then(courses => {
         const itemsPerSlide = 3;
@@ -138,5 +118,26 @@
         }
       });
   </script>
+  
+  <style>
+    .hero {
+      height: 60vh;
+      background-image: url('../assets/img/banner.jpg');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    }
+    .hero h1 {
+      font-size: 3rem;
+    }
+    .hero p {
+      font-size: 1.25rem;
+    }
+  </style>
 </body>
 </html>
+
+<?php
+require_once 'partials/footer.php';
+?>

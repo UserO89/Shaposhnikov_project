@@ -1,33 +1,33 @@
 <?php
 session_start();
 
-$dsn = 'mysql:host=localhost;dbname=courseco;charset=utf8mb4';
-$db_user = 'root';
-$db_pass = '';
+require_once __DIR__ . '/../Classes/Auth.php';
+require_once __DIR__ . '/../Classes/User.php';
 
-try {
-  $pdo = new PDO($dsn, $db_user, $db_pass, [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-  ]);
-} catch (PDOException $e) {
-  die('Database connection failed: ' . $e->getMessage());
-}
+$auth = new Auth();
+$user = new User();
+
+$error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $email = $_POST['email'] ?? '';
+  $username = $_POST['username'] ?? '';
   $password = $_POST['password'] ?? '';
 
-  $stmt = $pdo->prepare('SELECT * FROM users WHERE email = ?');
-  $stmt->execute([$email]);
-  $user = $stmt->fetch();
+  try {
+    $loggedInUser = $auth->login($username, $password);
+    if ($loggedInUser) {
+      // Store necessary user info in session, not just password
+      $_SESSION['user_id'] = $loggedInUser['id'];
+      $_SESSION['username'] = $loggedInUser['username'];
+      $_SESSION['role'] = $loggedInUser['role'];
 
-  if ($user && password_verify($password, $user['password'])) {
-    $_SESSION['user'] = $user['email'];
-    header('Location: index.html');
-    exit();
-  } else {
-    $error = 'Invalid email or password';
+      header('Location: home.php');
+      exit();
+    } else {
+      $error = 'Invalid email or password';
+    }
+  } catch (Exception $e) {
+    $error = $e->getMessage();
   }
 }
 ?>
@@ -87,8 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <?php endif; ?>
       <form method="POST" action="">
         <div class="mb-3">
-          <label for="email" class="form-label">Email address</label>
-          <input type="email" class="form-control" id="email" name="email" required>
+          <label for="username" class="form-label">Username</label>
+          <input type="text" class="form-control" id="username" name="username" required>
         </div>
         <div class="mb-3">
           <label for="password" class="form-label">Password</label>
