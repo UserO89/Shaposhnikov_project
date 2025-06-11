@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="editUserForm" action="edit_user.php" method="POST">
+                <form id="editUserForm" action="/Shaposhnikov_project/actions/admin/edit_user.php" method="POST">
                     <input type="hidden" id="edit_user_id" name="id">
                     <div class="mb-3">
                         <label for="edit_username" class="form-label">Username</label>
@@ -27,8 +27,9 @@
                     <div class="mb-3">
                         <label for="edit_role" class="form-label">Role</label>
                         <select class="form-select" id="edit_role" name="role" required>
-                            <option value="user">User</option>
+                            <option value="student">Stunent</option>
                             <option value="admin">Admin</option>
+                            <option value='teacher'>Teacher</option>
                         </select>
                     </div>
                     <div class="mb-3">

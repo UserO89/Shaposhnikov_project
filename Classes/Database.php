@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/DBInfo.php';
+require_once __DIR__ . '/../config/DBInfo.php';
 
 class Database {
     private $conn;
@@ -27,9 +27,9 @@ class Database {
         return $this->conn;
     }
 
-    public function query($sql)
-    {
-        return $this->conn->query($sql);
-    }
+    // public function query($sql)
+    // {
+    //     return $this->conn->query($sql);
+    // }
 }
 ?>

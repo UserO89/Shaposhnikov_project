@@ -1,8 +1,8 @@
 <?php
 // Получаем ID курса из URL
 $courseId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$courses = json_decode(file_get_contents('../assests/courses.json'), true);
-$reviews = json_decode(file_get_contents('../assests/reviews.json'), true);
+$courses = json_decode(file_get_contents('../assets/courses.json'), true);
+$reviews = json_decode(file_get_contents('../assets/reviews.json'), true);
 $course = $courses[$courseId] ?? null;
 $courseReviews = array_values(array_filter($reviews, fn($r) => $r['course_id'] === $courseId));
 ?>

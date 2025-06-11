@@ -9,7 +9,7 @@ require_once __DIR__ . '/../partials/header.php';
 
 
 // Проверка прав администратора
-// Auth::requireAdmin();
+Auth::requireAdmin();
 
 // Получение списка пользователей
 try {
@@ -107,7 +107,7 @@ try {
                                         <button class="btn btn-sm btn-outline-primary" onclick="editUser(<?php echo $user['id']; ?>)">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <form action="delete_user.php" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                        <form action="../../actions/admin/delete_user.php" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete <?php echo $user['first_name']. ' ' . $user['last_name']?>?');">
                                             <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
                                             <button type="submit" class="btn btn-sm btn-outline-danger">
                                                 <i class="fas fa-trash"></i>
@@ -126,10 +126,10 @@ try {
 </main>
 
 <!-- Add User Modal -->
-<?php include_once "../partials/add_user.php" ?>
+<?php include_once "../modals/add_user.php" ?>
 
 <!-- Edit User Modal -->
-<?php include_once "../partials/edit_user.php" ?>
+<?php include_once "../modals/edit_user.php" ?>
 
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -171,7 +171,7 @@ try {
 <script>
 function editUser(userId) {
     // Fetch user data from the server
-    fetch(`get_user.php?id=${userId}`)
+    fetch(`/Shaposhnikov_project/actions/admin/get_user.php?id=${userId}`)
         .then(response => response.json())
         .then(user => {
             if (user) {

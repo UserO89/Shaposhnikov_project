@@ -1,13 +1,11 @@
-
-<body>
 <?php
-require_once 'partials/header.php';
+require_once __DIR__ . '/partials/header.php';
 ?>
   <section class="hero text-center text-light d-flex align-items-center justify-content-center">
     <div>
       <h1 class="display-4">Master New Skills Online</h1>
       <p class="lead">Explore our wide selection of professional courses</p>
-      <a href="courses.php" class="btn btn-lg btn-primary">Browse Courses</a>
+      <a href="/Shaposhnikov_project/templates/courses.php" class="btn btn-lg btn-primary">Browse Courses</a>
     </div>
   </section>
 
@@ -18,7 +16,7 @@ require_once 'partials/header.php';
         <section class="my-5 px-3 py-4 bg-white rounded shadow-sm">
       <div class="row align-items-center">
         <div class="col-md-6">
-          <img src="../assets/img/team.png" alt="Our Team" class="img-fluid rounded">
+          <img src="/Shaposhnikov_project/assets/img/team.png" alt="Our Team" class="img-fluid rounded">
         </div>
         <div class="col-md-6">
           <h3>About CourseCo</h3>
@@ -73,18 +71,17 @@ require_once 'partials/header.php';
     <section class="text-center my-5 py-5 bg-primary text-white rounded">
       <h2 class="mb-3">Ready to level up your career?</h2>
       <p class="mb-4">Join thousands of students who are growing with CourseCo.</p>
-      <a href="courses.php" class="btn btn-light btn-lg px-4">Explore Courses</a>
+      <a href="/Shaposhnikov_project/templates/courses.php" class="btn btn-light btn-lg px-4">Explore Courses</a>
     </section>
   </main>
 
   <!-- Footer -->
   <div id="footer"> 
-    <?php include 'partials/footer.php'; ?>
+    <?php include __DIR__ . '/partials/footer.php'; ?>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    fetch('../assets/info.json')
+    fetch('/Shaposhnikov_project/assets/info.json')
       .then(res => res.json())
       .then(courses => {
         const itemsPerSlide = 3;
@@ -122,7 +119,7 @@ require_once 'partials/header.php';
   <style>
     .hero {
       height: 60vh;
-      background-image: url('../assets/img/banner.jpg');
+      background-image: url('/Shaposhnikov_project/assets/img/banner.jpg');
       background-size: cover;
       background-position: center;
       color: white;
@@ -137,7 +134,3 @@ require_once 'partials/header.php';
   </style>
 </body>
 </html>
-
-<?php
-require_once 'partials/footer.php';
-?>

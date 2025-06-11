@@ -1,13 +1,10 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
+session_start();
 require_once __DIR__ . '/../../Classes/Auth.php';
 require_once __DIR__ . '/../../Classes/Database.php';
 
 // Проверка прав администратора
-// Auth::requireAdmin();
+Auth::requireAdmin();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
@@ -40,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$email) {
             $errors[] = 'Valid email is required';
         }
-        if (!in_array($role, ['user', 'admin'])) {
+        if (!in_array($role, ['student', 'admin', 'teacher'])) {
             $errors[] = 'Invalid role';
         }
         if ($password && strlen($password) < 6) {
@@ -49,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!empty($errors)) {
             $_SESSION['errors'] = $errors;
-            header('Location: admin_users.php');
+            header('Location: /Shaposhnikov_project/templates/admin/admin_users.php');
             exit();
         }
 
@@ -58,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$username, $id]);
         if ($stmt->fetch()) {
             $_SESSION['errors'] = ['Username is already taken'];
-            header('Location: admin_users.php');
+            header('Location: /Shaposhnikov_project/templates/admin/admin_users.php');
             exit();
         }
 
@@ -67,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$email, $id]);
         if ($stmt->fetch()) {
             $_SESSION['errors'] = ['Email is already taken'];
-            header('Location: admin_users.php');
+            header('Location: /Shaposhnikov_project/templates/admin/admin_users.php');
             exit();
         }
 
@@ -91,5 +88,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['errors'] = ['Invalid request method'];
 }
 
-header('Location: admin_users.php');
+header('Location: /Shaposhnikov_project/templates/admin/admin_users.php');
 exit(); 

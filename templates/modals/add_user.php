@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="addUserForm" action="add_user.php" method="POST">
+                <form id="addUserForm" action="/Shaposhnikov_project/actions/admin/add_user.php" method="POST">
                     <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
                         <input type="text" class="form-control" id="username" name="username" required>
@@ -30,7 +30,8 @@
                     <div class="mb-3">
                         <label for="role" class="form-label">Role</label>
                         <select class="form-select" id="role" name="role" required>
-                            <option value="user">User</option>
+                            <option value="student">Student</option>
+                            <option value="teacher">Teacher</option>
                             <option value="admin">Admin</option>
                         </select>
                     </div>

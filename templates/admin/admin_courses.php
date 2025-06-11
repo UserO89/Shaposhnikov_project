@@ -6,7 +6,7 @@ require_once __DIR__ . '/../../Classes/Auth.php';
 require_once __DIR__ . '/../../Classes/Database.php';
 
 // Проверка прав администратора
-// Auth::requireAdmin();
+Auth::requireAdmin();
 
 $courses = [];
 $json_file_path = __DIR__ . '/../../assets/info.json'; 
