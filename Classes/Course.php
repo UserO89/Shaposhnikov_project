@@ -241,7 +241,8 @@ class Course extends Database
     {
         $sql = "SELECT * FROM courses ORDER BY created_at DESC LIMIT ?";
         $stmt = $this->getConnection()->prepare($sql);
-        $stmt->execute([$limit]);
+        $stmt->bindValue(1, $limit, PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

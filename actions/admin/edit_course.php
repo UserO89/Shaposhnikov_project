@@ -20,32 +20,12 @@ require_once __DIR__ . '/../../Classes/Database.php';
 Auth::requireAdmin();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // $json_file_path = __DIR__ . '/../assets/info.json';
-    // $courses = [];
-
-    // // Чтение существующих курсов
-    // if (file_exists($json_file_path)) {
-    //     $json_content = file_get_contents($json_file_path);
-    //     if ($json_content === false) {
-    //         $_SESSION['errors'][] = 'Ошибка: Не удалось прочитать содержимое файла info.json.';
-    //         header('Location: ' . $base_path . '/templates/admin/admin_courses.php');
-    //         exit();
-    //     }
-    //     $decoded_json = json_decode($json_content, true);
-    //     if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_json)) {
-    //         $courses = $decoded_json;
-    //     } else {
-    //         $_SESSION['errors'][] = 'Ошибка: Некорректный формат JSON в файле info.json.';
-    //         header('Location: ' . $base_path . '/templates/admin/admin_courses.php');
-    //         exit();
-    //     }
-    // }
-
     try {
         $db = new Database();
         $conn = $db->getConnection();
 
         // Получение данных из формы
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
         $title = trim($_POST['title'] ?? '');
         $description = trim($_POST['description'] ?? '');
         $duration = trim($_POST['duration'] ?? '');
@@ -54,6 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Валидация данных
         $errors = [];
+        if (!$id) {
+            $errors[] = 'Неверный ID курса.';
+        }
         if (empty($title)) {
             $errors[] = 'Название курса обязательно.';
         }
@@ -73,15 +56,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit();
         }
 
-        // Добавление нового курса в базу данных
-        $stmt = $conn->prepare("INSERT INTO courses (title, description, duration, price, image_url) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$title, $description, $duration, $price, $image]);
+        // Обновление курса в базе данных
+        $stmt = $conn->prepare("UPDATE courses SET title = ?, description = ?, duration = ?, price = ?, image_url = ? WHERE id = ?");
+        $stmt->execute([$title, $description, $duration, $price, $image, $id]);
 
-        $_SESSION['success'] = 'Курс успешно добавлен.';
+        $_SESSION['success'] = 'Курс успешно обновлен.';
 
     } catch (PDOException $e) {
         $_SESSION['errors'][] = 'Ошибка базы данных: ' . $e->getMessage();
-        error_log("Database error adding course: " . $e->getMessage());
+        error_log("Database error updating course: " . $e->getMessage());
     }
 
     header('Location: ' . $base_path . '/templates/admin/admin_courses.php');

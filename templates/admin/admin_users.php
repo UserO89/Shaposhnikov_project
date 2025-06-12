@@ -214,4 +214,6 @@ document.getElementById('editUserForm').addEventListener('submit', function(e) {
 });
 </script>
 
-<?php require_once '../partials/footer.php'; ?> 
+<?php require_once __DIR__ . '/../partials/footer.php'; ?>
+</body>
+</html> 

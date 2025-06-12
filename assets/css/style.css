@@ -1,13 +1,27 @@
+html,
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f4f6f9;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  main {
+    flex-grow: 1;
   }
   .hero {
     height: 60vh;
-    background: linear-gradient(to right, #0056b3, #007bff);
+    background-image: url('/Shaposhnikov_project/assets/img/banner.jpg'); /* Keep absolute for now to ensure it works */
+    background-size: cover;
+    background-position: center;
     color: white;
-    padding: 2rem;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+  }
+  .hero h1 {
+    font-size: 3rem;
+  }
+  .hero p {
+    font-size: 1.25rem;
   }
   .card {
     border: none;

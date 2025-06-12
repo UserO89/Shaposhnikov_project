@@ -1,5 +1,21 @@
 <?php
 require_once __DIR__ . '/partials/header.php';
+require_once __DIR__ . '/../Classes/Database.php';
+require_once __DIR__ . '/../Classes/Course.php';
+
+$courses = [];
+$reviews = [];
+
+$db = new Database();
+$conn = $db->getConnection();
+$courseObj = new Course();
+
+// Get latest 6 courses for featured
+$courses = $courseObj->getLatest(6);
+
+// Fetch reviews along with user names
+$stmt = $conn->query("SELECT r.text, r.rating, u.first_name, u.last_name FROM reviews r JOIN users u ON r.user_id = u.id ORDER BY r.created_at DESC LIMIT 5");
+$reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
   <section class="hero text-center text-light d-flex align-items-center justify-content-center">
     <div>
@@ -31,7 +47,43 @@ require_once __DIR__ . '/partials/header.php';
     </section>
     <h2 class="text-center mb-4">Featured Courses</h2>
     <div id="courseCarousel" class="carousel slide" data-bs-ride="carousel">
-      <div class="carousel-inner" id="carouselContent"></div>
+      <div class="carousel-inner" id="carouselContent">
+        <?php if (!empty($courses)): ?>
+          <?php
+          $course_chunks = array_chunk($courses, 3); // Group courses into chunks of 3 for slides
+          foreach ($course_chunks as $index => $slide_courses):
+            $isActive = $index === 0 ? 'active' : '';
+          ?>
+            <div class="carousel-item <?= $isActive ?>">
+              <div class="row justify-content-center">
+                <?php foreach ($slide_courses as $course): ?>
+                  <div class="col-md-4">
+                    <div class="card h-100 shadow-sm course-card">
+                      <img src="<?= htmlspecialchars($course['image_url'] ?? '/Shaposhnikov_project/assets/img/default-course.jpg') ?>" class="card-img-top" alt="<?= htmlspecialchars($course['title']) ?>" style="height: 200px; object-fit: cover;">
+                      <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-truncate"> <a href="/Shaposhnikov_project/templates/course.php?id=<?= htmlspecialchars($course['id']) ?>" class="text-decoration-none text-dark stretched-link"><?= htmlspecialchars($course['title']) ?></a></h5>
+                        <p class="card-text flex-grow-1"><?= htmlspecialchars($course['description']) ?></p>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                          <span class="badge bg-primary rounded-pill"><?= htmlspecialchars($course['duration']) ?></span>
+                          <span class="fw-bold text-success"><?= '$' . number_format($course['price'], 2) ?></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <?php endforeach; ?>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <div class="carousel-item active">
+            <div class="row justify-content-center">
+              <div class="col-12">
+                <div class="alert alert-info text-center">No featured courses available.</div>
+              </div>
+            </div>
+          </div>
+        <?php endif; ?>
+      </div>
       <button class="carousel-control-prev" type="button" data-bs-target="#courseCarousel" data-bs-slide="prev">
         <span class="carousel-control-prev-icon"></span>
       </button>
@@ -45,18 +97,31 @@ require_once __DIR__ . '/partials/header.php';
       <h3 class="text-center mb-4">What Our Students Say</h3>
       <div id="homeReviewCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner text-center px-5">
-          <div class="carousel-item active">
-            <blockquote class="blockquote">
-              <p class="mb-3">“The course helped me land my dream job in just 2 months.”</p>
-              <footer class="blockquote-footer">Alex G., Web Developer</footer>
-            </blockquote>
-          </div>
-          <div class="carousel-item">
-            <blockquote class="blockquote">
-              <p class="mb-3">“Well-structured content and great instructors. Highly recommend!”</p>
-              <footer class="blockquote-footer">Sophie M., Data Analyst</footer>
-            </blockquote>
-          </div>
+          <?php if (!empty($reviews)): ?>
+            <?php foreach ($reviews as $index => $review): ?>
+              <div class="carousel-item <?= $index === 0 ? 'active' : '' ?>">
+                <blockquote class="blockquote">
+                  <p class="mb-3">“<?= htmlspecialchars($review['text']) ?>”</p>
+                  <footer class="blockquote-footer">
+                    <?= htmlspecialchars($review['first_name'] . ' ' . substr($review['last_name'], 0, 1) . '.') ?>, Student
+                    <?php if (isset($review['rating'])): ?>
+                      <br>
+                      <?php for ($i = 0; $i < $review['rating']; $i++): ?>
+                        <i class="fas fa-star text-warning"></i>
+                      <?php endfor; ?>
+                    <?php endif; ?>
+                  </footer>
+                </blockquote>
+              </div>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <div class="carousel-item active">
+              <blockquote class="blockquote">
+                <p class="mb-3">“No reviews available yet. Be the first to share your experience!”</p>
+                <footer class="blockquote-footer">Admin</footer>
+              </blockquote>
+            </div>
+          <?php endif; ?>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#homeReviewCarousel" data-bs-slide="prev">
           <span class="carousel-control-prev-icon"></span>
@@ -76,44 +141,42 @@ require_once __DIR__ . '/partials/header.php';
   </main>
 
   <!-- Footer -->
-  <div id="footer"> 
     <?php include __DIR__ . '/partials/footer.php'; ?>
-  </div>
 
   <script>
-    fetch('/Shaposhnikov_project/assets/info.json')
-      .then(res => res.json())
-      .then(courses => {
-        const itemsPerSlide = 3;
-        const carouselContent = document.getElementById('carouselContent');
+    // fetch('/Shaposhnikov_project/assets/info.json')
+    //   .then(res => res.json())
+    //   .then(courses => {
+    //     const itemsPerSlide = 3;
+    //     const carouselContent = document.getElementById('carouselContent');
 
-        for (let i = 0; i < courses.length; i += itemsPerSlide) {
-          const slideCourses = courses.slice(i, i + itemsPerSlide);
-          const isActive = i === 0 ? 'active' : '';
-          const slide = document.createElement('div');
-          slide.className = `carousel-item ${isActive}`;
-          const row = document.createElement('div');
-          row.className = 'row justify-content-center';
+    //     for (let i = 0; i < courses.length; i += itemsPerSlide) {
+    //       const slideCourses = courses.slice(i, i + itemsPerSlide);
+    //       const isActive = i === 0 ? 'active' : '';
+    //       const slide = document.createElement('div');
+    //       slide.className = `carousel-item ${isActive}`;
+    //       const row = document.createElement('div');
+    //       row.className = 'row justify-content-center';
 
-          slideCourses.forEach(course => {
-            const col = document.createElement('div');
-            col.className = 'col-md-4';
-            col.innerHTML = `
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title">${course.title}</h5>
-                  <p class="card-text">${course.desc}</p>
-                  <a href="#" class="btn btn-outline-primary">Learn More</a>
-                </div>
-              </div>
-            `;
-            row.appendChild(col);
-          });
+    //       slideCourses.forEach(course => {
+    //         const col = document.createElement('div');
+    //         col.className = 'col-md-4';
+    //         col.innerHTML = `
+    //           <div class="card">
+    //             <div class="card-body">
+    //               <h5 class="card-title">${course.title}</h5>
+    //               <p class="card-text">${course.desc}</p>
+    //               <a href="#" class="btn btn-outline-primary">Learn More</a>
+    //             </div>
+    //           </div>
+    //         `;
+    //         row.appendChild(col);
+    //       });
 
-          slide.appendChild(row);
-          carouselContent.appendChild(slide);
-        }
-      });
+    //       slide.appendChild(row);
+    //       carouselContent.appendChild(slide);
+    //     }
+    //   });
   </script>
   
   <style>

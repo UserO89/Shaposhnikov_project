@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,7 +24,7 @@ session_start();
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link<?= basename($_SERVER['PHP_SELF']) == 'home.php' ? ' active' : '' ?>" href="/Shaposhnikov_project/templates/home.php">Home</a></li>
         <li class="nav-item"><a class="nav-link<?= basename($_SERVER['PHP_SELF']) == 'courses.php' ? ' active' : '' ?>" href="/Shaposhnikov_project/templates/courses.php">Courses</a></li>
-        <li class="nav-item"><a class="nav-link<?= basename($_SERVER['PHP_SELF']) == 'NotFound.php' ? ' active' : '' ?>" href="/Shaposhnikov_project/templates/NotFound.php">About</a></li>
+        <li class="nav-item"><a class="nav-link<?= basename($_SERVER['PHP_SELF']) == 'about.php' ? ' active' : '' ?>" href="/Shaposhnikov_project/templates/about.php">About</a></li>
         <li class="nav-item"><a class="nav-link<?= basename($_SERVER['PHP_SELF']) == 'contact.php' ? ' active' : '' ?>" href="/Shaposhnikov_project/templates/contact.php">Contact</a></li>
       </ul>
       

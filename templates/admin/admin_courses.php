@@ -2,32 +2,26 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Определяем базовый путь
+if (!isset($base_path)) {
+    $base_path = '/Shaposhnikov_project';
+}
+
 require_once __DIR__ . '/../../Classes/Auth.php';
 require_once __DIR__ . '/../../Classes/Database.php';
 
-// Проверка прав администратора
 Auth::requireAdmin();
 
 $courses = [];
-$json_file_path = __DIR__ . '/../../assets/info.json'; 
-
-if (file_exists($json_file_path)) {
-    $json_content = file_get_contents($json_file_path);
-    if ($json_content === false) {
-        // Логирование ошибки, но не умираем, чтобы страница загрузилась хоть как-то
-        error_log("Failed to read info.json in admin_courses.php: " . error_get_last()['message']);
-        $_SESSION['errors'][] = 'Ошибка: Не удалось прочитать содержимое файла info.json.';
-    } else {
-        $decoded_json = json_decode($json_content, true);
-        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_json)) {
-            $courses = $decoded_json;
-        } else {
-            error_log("JSON Decode Error in admin_courses.php: " . json_last_error_msg());
-            $_SESSION['errors'][] = 'Ошибка: Некорректный формат JSON в файле info.json.';
-        }
-    }
-} else {
-    $_SESSION['errors'][] = 'Ошибка: Файл info.json не найден по пути: ' . htmlspecialchars($json_file_path);
+try {
+    $db = new Database();
+    $conn = $db->getConnection();
+    $stmt = $conn->query("SELECT id, title, description, duration, price, image_url FROM courses ORDER BY id DESC");
+    $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $_SESSION['errors'][] = 'Database error: ' . $e->getMessage();
+    error_log("Database error in admin_courses.php: " . $e->getMessage());
 }
 
 // Включаем header после всех PHP-операций
@@ -43,13 +37,13 @@ require_once __DIR__ . '/../partials/header.php';
                     <h5 class="mb-0">Admin Panel</h5>
                 </div>
                 <div class="list-group list-group-flush">
-                    <a href="<?php echo $base_path; ?>/templates/admin/dashboard.php" class="list-group-item list-group-item-action">
+                    <a href="/templates/admin/dashboard.php" class="list-group-item list-group-item-action">
                         <i class="fas fa-tachometer-alt me-2"></i> Dashboard
                     </a>
-                    <a href="<?php echo $base_path; ?>/templates/admin/admin_users.php" class="list-group-item list-group-item-action">
+                    <a href="admin_users.php" class="list-group-item list-group-item-action">
                         <i class="fas fa-users me-2"></i> Users
                     </a>
-                    <a href="<?php echo $base_path; ?>/templates/admin/courses.php" class="list-group-item list-group-item-action active">
+                    <a href="/templates/admin/courses.php" class="list-group-item list-group-item-action active">
                         <i class="fas fa-book me-2"></i> Courses
                     </a>
                 </div>
@@ -91,37 +85,39 @@ require_once __DIR__ . '/../partials/header.php';
                 <?php if (!empty($courses)): ?>
                     <?php foreach ($courses as $index => $course): ?>
                     <div class="col">
-                        <div class="card h-100">
-                            <img src="<?php echo htmlspecialchars($course['image'] ?? '/assets/img/default-course.jpg'); ?>" 
-                                 class="card-img-top" alt="<?php echo htmlspecialchars($course['title']); ?>"
-                                 style="height: 200px; object-fit: cover;">
-                            <div class="card-body">
-                                <h5 class="card-title"><?php echo htmlspecialchars($course['title']); ?></h5>
-                                <p class="card-text"><?php echo htmlspecialchars(mb_substr($course['description'] ?? '', 0, 100)) . '...'; ?></p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-primary"><?php echo htmlspecialchars($course['duration']); ?></span>
-                                    <span class="text-primary fw-bold"><?php 
-                                        $price = $course['price'] ?? 0;
-                                        // Remove any currency symbols and convert to float
-                                        $price = is_string($price) ? (float) preg_replace('/[^0-9.]/', '', $price) : (float) $price;
-                                        echo '$' . number_format($price, 2); 
-                                    ?></span>
+                        <a href="<?= $base_path ?>/templates/course.php?id=<?= htmlspecialchars($course['id']) ?>" class="text-decoration-none text-dark">
+                            <div class="card h-100 course-card">
+                                <img src="<?php echo htmlspecialchars($course['image_url'] ?? '/assets/img/default-course.jpg'); ?>" 
+                                     class="card-img-top" alt="<?php echo htmlspecialchars($course['title']); ?>"
+                                     style="height: 200px; object-fit: cover;">
+                                <div class="card-body">
+                                    <h5 class="card-title"><?php echo htmlspecialchars($course['title']); ?></h5>
+                                    <p class="card-text"><?php echo htmlspecialchars(mb_substr($course['description'] ?? '', 0, 100)) . '...'; ?></p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-primary"><?php echo htmlspecialchars($course['duration']); ?></span>
+                                        <span class="text-primary fw-bold"><?php 
+                                            $price = $course['price'] ?? 0;
+                                            // Remove any currency symbols and convert to float
+                                            $price = is_string($price) ? (float) preg_replace('/[^0-9.]/', '', $price) : (float) $price;
+                                            echo '$' . number_format($price, 2); 
+                                        ?></span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="card-footer bg-transparent border-top-0">
-                                <div class="d-flex justify-content-end gap-2">
-                                    <button class="btn btn-sm btn-outline-primary" onclick="editCourse(<?php echo $index; ?>)">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <form action="<?php echo $base_path; ?>/templates/admin/delete_course.php" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this course?');">
-                                        <input type="hidden" name="course_id" value="<?php echo htmlspecialchars($course['id'] ?? $index); ?>">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i class="fas fa-trash"></i>
+                                <div class="card-footer bg-transparent border-top-0">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation(); editCourse(<?php echo $course['id']; ?>)">
+                                            <i class="fas fa-edit"></i>
                                         </button>
-                                    </form>
+                                        <form action="<?php echo $base_path; ?>/actions/admin/delete_course.php" method="POST" class="d-inline" onsubmit="event.stopPropagation(); return confirm('Are you sure you want to delete this course?');">
+                                            <input type="hidden" name="course_id" value="<?php echo htmlspecialchars($course['id']); ?>">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -134,80 +130,11 @@ require_once __DIR__ . '/../partials/header.php';
     </div>
 </main>
 
-<!-- Add Course Modal -->
-<div class="modal fade" id="addCourseModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add New Course</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="addCourseForm" action="<?php echo $base_path; ?>/templates/admin/add_course.php" method="POST">
-                    <div class="mb-3">
-                        <label for="course_title" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="course_title" name="title" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="course_description" class="form-label">Description</label>
-                        <textarea class="form-control" id="course_description" name="description" rows="3" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="course_duration" class="form-label">Duration</label>
-                        <input type="text" class="form-control" id="course_duration" name="duration" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="course_price" class="form-label">Price</label>
-                        <input type="number" class="form-control" id="course_price" name="price" step="0.01" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="course_image" class="form-label">Image URL</label>
-                        <input type="text" class="form-control" id="course_image" name="image" placeholder="e.g., /assets/img/course1.jpg">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Add Course</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Edit Course Modal -->
-<div class="modal fade" id="editCourseModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Course</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="editCourseForm" action="<?php echo $base_path; ?>/templates/admin/edit_course.php" method="POST">
-                    <input type="hidden" id="edit_course_id" name="id">
-                    <div class="mb-3">
-                        <label for="edit_course_title" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="edit_course_title" name="title" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_course_description" class="form-label">Description</label>
-                        <textarea class="form-control" id="edit_course_description" name="description" rows="3" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_course_duration" class="form-label">Duration</label>
-                        <input type="text" class="form-control" id="edit_course_duration" name="duration" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_course_price" class="form-label">Price</label>
-                        <input type="number" class="form-control" id="edit_course_price" name="price" step="0.01" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_course_image" class="form-label">Image URL</label>
-                        <input type="text" class="form-control" id="edit_course_image" name="image" placeholder="e.g., /assets/img/course1.jpg">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+<!-- Course Modal -->
+<?php
+require_once("../modals/add_course.php");
+require_once("../modals/edit_course.php");
+?>
 
 <style>
 .card {
@@ -245,23 +172,31 @@ require_once __DIR__ . '/../partials/header.php';
 </style>
 
 <script>
-const coursesData = <?php echo json_encode($courses); ?>;
 
-function editCourse(index) {
-    const course = coursesData[index];
-    if (course) {
-        document.getElementById('edit_course_id').value = course.id;
-        document.getElementById('edit_course_title').value = course.title;
-        document.getElementById('edit_course_description').value = course.description;
-        document.getElementById('edit_course_duration').value = course.duration;
-        document.getElementById('edit_course_price').value = course.price;
-        document.getElementById('edit_course_image').value = course.image || '';
+function editCourse(courseId) {
+    // Fetch course data from the server
+    fetch(`/Shaposhnikov_project/actions/admin/get_course.php?id=${courseId}`)
+        .then(response => response.json())
+        .then(course => {
+            if (course) {
+                document.getElementById('edit_course_id').value = course.id;
+                document.getElementById('edit_course_title').value = course.title;
+                document.getElementById('edit_course_description').value = course.description;
+                document.getElementById('edit_course_duration').value = course.duration;
+                document.getElementById('edit_course_price').value = course.price;
+                document.getElementById('edit_course_image').value = course.image_url || '';
 
-        const editModal = new bootstrap.Modal(document.getElementById('editCourseModal'));
-        editModal.show();
-    } else {
-        console.error('Course not found for index:', index);
-    }
+                const editModal = new bootstrap.Modal(document.getElementById('editCourseModal'));
+                editModal.show();
+            } else {
+                console.error('Course not found for ID:', courseId);
+                alert('Error: Course not found');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching course data:', error);
+            alert('Error loading course data');
+        });
 }
 </script>
 

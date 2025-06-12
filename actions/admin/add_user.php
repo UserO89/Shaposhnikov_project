@@ -75,7 +75,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['success'] = 'User added successfully';
     } 
     catch (PDOException $e) {
-        $_SESSION['errors'] = ['Database error: ' . $e->getMessage()];
+        // Check if the error is due to duplicate entry
+        if ($e->getCode() === '23000') {
+            $_SESSION['errors'] = ['Username or Email is already taken.'];
+        } else {
+            $_SESSION['errors'] = ['Database error: ' . $e->getMessage()];
+        }
     }
 } else {
     $_SESSION['errors'] = ['Invalid request method'];
