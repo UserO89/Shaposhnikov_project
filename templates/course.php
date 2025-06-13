@@ -1,4 +1,8 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../Classes/Auth.php';
 require_once __DIR__ . '/../Classes/Database.php';
 
 // Get course ID from URL
@@ -6,12 +10,29 @@ $courseId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 $course = null;
 $reviews = [];
+$isEnrolled = false;
+$enrollmentId = null;
+
+$auth = new Auth();
+$user = $auth->getUser(); // Get current user data
+
 try {
     $db = new Database();
     $conn = $db->getConnection();
     $stmt = $conn->prepare("SELECT * FROM courses WHERE id = ?");
     $stmt->execute([$courseId]);
     $course = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($course && $user) {
+        // Check if user is already enrolled in this course
+        $stmtEnrollment = $conn->prepare("SELECT id FROM user_courses WHERE user_id = ? AND course_id = ?");
+        $stmtEnrollment->execute([$user['id'], $courseId]);
+        $existingEnrollment = $stmtEnrollment->fetch(PDO::FETCH_ASSOC);
+        if ($existingEnrollment) {
+            $isEnrolled = true;
+            $enrollmentId = $existingEnrollment['id'];
+        }
+    }
 
     // Fetch reviews for the course
     if ($course) {
@@ -70,15 +91,24 @@ try {
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     Duration
-                                    <span class="badge bg-primary rounded-pill"><?= htmlspecialchars($course['duration']) ?></span>
+                                    <span class="badge bg-primary rounded-pill"><?= htmlspecialchars($course['duration'] ?? 'N/A') ?></span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     Price
-                                    <span class="text-primary fw-bold">$<?= number_format($course['price'], 2) ?></span>
+                                    <span class="text-primary fw-bold">$<?= number_format($course['price'] ?? 0, 2) ?></span>
                                 </li>
                             </ul>
                             <div class="mt-4">
-                                <button class="btn btn-primary w-100">Enroll Now</button>
+                                <?php if ($user): // Only show button if user is logged in ?>
+                                    <?php if ($isEnrolled): ?>
+                                        <a href="#" class="btn btn-success w-100 disabled">Enrolled <i class="fas fa-check"></i></a>
+                                        <button type="button" class="btn btn-primary w-100 mt-2">Continue Learning</button>
+                                    <?php else: ?>
+                                        <button type="button" class="btn btn-primary w-100" id="enrollButton" data-course-id="<?= htmlspecialchars($courseId) ?>">Enroll Now</button>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#loginModal">Login to Enroll</button>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -122,5 +152,36 @@ try {
     <?php include 'partials/footer.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const enrollButton = document.getElementById('enrollButton');
+            if (enrollButton) {
+                enrollButton.addEventListener('click', function() {
+                    const courseId = this.dataset.courseId;
+                    
+                    fetch('../actions/user/EnrollCourse.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'course_id=' + courseId
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(data.message);
+                            window.location.reload(); // Reload to show updated status
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred during enrollment.');
+                    });
+                });
+            }
+        });
+    </script>
 </body>
 </html>

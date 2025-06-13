@@ -37,9 +37,6 @@ require_once __DIR__ . '/../partials/header.php';
                     <h5 class="mb-0">Admin Panel</h5>
                 </div>
                 <div class="list-group list-group-flush">
-                    <a href="/templates/admin/dashboard.php" class="list-group-item list-group-item-action">
-                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
-                    </a>
                     <a href="admin_users.php" class="list-group-item list-group-item-action">
                         <i class="fas fa-users me-2"></i> Users
                     </a>

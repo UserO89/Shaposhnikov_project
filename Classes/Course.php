@@ -32,14 +32,14 @@ class Course extends Database
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Получить все курсы
+    // Получить все курсы  -----------------------------------------------------
     public function getAll()
     {
         $stmt = $this->getConnection()->query("SELECT * FROM courses ORDER BY created_at DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Создать новый курс
+    // Создать новый курс --------------------------------------------------------
     public function create($data)
     {
         try {
@@ -71,7 +71,7 @@ class Course extends Database
     }
 
     // Обновить данные курса
-    public function update($id, $data)
+    public function update($id, $data) //------------------------------------------------
     {
         try {
             // Валидация данных
@@ -171,7 +171,7 @@ class Course extends Database
         }
     }
 
-    // Поиск курсов
+    // Поиск курсов -----------------------------------------------------------------------------
     public function search($query)
     {
         $search = "%$query%";
@@ -186,14 +186,14 @@ class Course extends Database
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Получить количество курсов
+    // Получить количество курсов  -----------------------------------------------------------------------------
     public function getCount()
     {
         $stmt = $this->getConnection()->query("SELECT COUNT(*) FROM courses");
         return $stmt->fetchColumn();
     }
 
-    // Получить курсы с пагинацией
+    // Получить курсы с пагинацией ------------------------------------------------------------------------------------
     public function getPaginated($page = 1, $perPage = 10)
     {
         $offset = ($page - 1) * $perPage;
@@ -204,7 +204,7 @@ class Course extends Database
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Получить курсы по цене (фильтр)
+    // Получить курсы по цене (фильтр) ------------------------------------------------------------------------------------------
     public function getByPriceRange($minPrice, $maxPrice)
     {
         $sql = "SELECT * FROM courses WHERE price >= ? AND price <= ? ORDER BY price ASC";
@@ -213,7 +213,7 @@ class Course extends Database
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Получить курсы по длительности (фильтр)
+    // Получить курсы по длительности (фильтр) -----------------------------------------------------------
     public function getByDuration($duration)
     {
         $sql = "SELECT * FROM courses WHERE duration = ? ORDER BY created_at DESC";
@@ -222,7 +222,7 @@ class Course extends Database
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Получить самые популярные курсы (по количеству записей)
+    // Получить самые популярные курсы (по количеству записей) -----------------------------------------------------
     public function getPopular($limit = 5)
     {
         $sql = "SELECT c.*, COUNT(e.id) as enrollment_count 
@@ -236,7 +236,7 @@ class Course extends Database
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Получить последние добавленные курсы
+    // Получить последние добавленные курсы ------------------------------------------------------------------------------
     public function getLatest($limit = 5)
     {
         $sql = "SELECT * FROM courses ORDER BY created_at DESC LIMIT ?";

@@ -2,13 +2,6 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
-// Determine the base path
-if (!isset($base_path)) {
-    $base_path = '/Shaposhnikov_project';
-}
-
-// Include header
 require_once __DIR__ . '/partials/header.php';
 ?>
 

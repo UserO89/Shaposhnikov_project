@@ -9,7 +9,6 @@ try {
     $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     error_log("Database error in courses.php: " . $e->getMessage());
-    // Можно добавить сообщение об ошибке для пользователя, если нужно
 }
 ?>
 <!DOCTYPE html>
@@ -57,3 +56,4 @@ try {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+

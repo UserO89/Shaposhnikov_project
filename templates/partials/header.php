@@ -21,35 +21,33 @@ if (session_status() === PHP_SESSION_NONE) {
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
+      <ul class="navbar-nav mx-auto">
         <li class="nav-item"><a class="nav-link<?= basename($_SERVER['PHP_SELF']) == 'home.php' ? ' active' : '' ?>" href="/Shaposhnikov_project/templates/home.php">Home</a></li>
         <li class="nav-item"><a class="nav-link<?= basename($_SERVER['PHP_SELF']) == 'courses.php' ? ' active' : '' ?>" href="/Shaposhnikov_project/templates/courses.php">Courses</a></li>
         <li class="nav-item"><a class="nav-link<?= basename($_SERVER['PHP_SELF']) == 'about.php' ? ' active' : '' ?>" href="/Shaposhnikov_project/templates/about.php">About</a></li>
-        <li class="nav-item"><a class="nav-link<?= basename($_SERVER['PHP_SELF']) == 'contact.php' ? ' active' : '' ?>" href="/Shaposhnikov_project/templates/contact.php">Contact</a></li>
+        <?php if (isset($_SESSION['user'])): ?>
+            <li class="nav-item">
+                <a class="nav-link<?= basename($_SERVER['PHP_SELF']) == 'profile.php' ? ' active' : '' ?>" href="/Shaposhnikov_project/templates/profile.php">Profile</a>
+            </li>
+            <?php if (isset($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'admin'): ?>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Shaposhnikov_project/templates/admin/admin_courses.php">Manage Courses</a>
+                </li>
+
+            <?php endif; ?>
+        <?php endif; ?>
       </ul>
       
-      <!-- User section -->
-      <div class="navbar-nav ms-auto">
+      <div class="navbar-nav">
         <?php if (isset($_SESSION['user'])): ?>
-          <div class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-light" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-              <?php echo htmlspecialchars($_SESSION['user']['username']); ?>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="/Shaposhnikov_project/templates/profile.php">Profile</a></li>
-              <?php if (isset($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'admin'): ?>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="/Shaposhnikov_project/templates/admin/admin_courses.php">Manage Courses</a></li>
-                <li><a class="dropdown-item" href="/Shaposhnikov_project/templates/admin/admin_users.php">Manage Users</a></li>
-              <?php endif; ?>
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <form action="/Shaposhnikov_project/actions/user/Logout.php" method="POST" style="display: inline;">
-                  <button type="submit" class="dropdown-item">Logout</button>
+            <li class="nav-item">
+                <span class="nav-link text-light"><?php echo htmlspecialchars($_SESSION['user']['username']); ?></span>
+            </li>
+            <li class="nav-item">
+                <form action="/Shaposhnikov_project/actions/user/Logout.php" method="POST">
+                    <button type="submit" class="nav-link" style="background: none; border: none; padding: 0; cursor: pointer; color: rgba(255,255,255,.55);">Logout</button>
                 </form>
-              </li>
-            </ul>
-          </div>
+            </li>
         <?php else: ?>
           <button type="button" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal">
             Login
@@ -105,7 +103,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
 <?php require_once __DIR__ . '/../modals/login_modal.php'?>
 <?php require_once __DIR__ . '/../modals/register_modal.php'?>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

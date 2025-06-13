@@ -142,42 +142,6 @@ $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
   <!-- Footer -->
     <?php include __DIR__ . '/partials/footer.php'; ?>
-
-  <script>
-    // fetch('/Shaposhnikov_project/assets/info.json')
-    //   .then(res => res.json())
-    //   .then(courses => {
-    //     const itemsPerSlide = 3;
-    //     const carouselContent = document.getElementById('carouselContent');
-
-    //     for (let i = 0; i < courses.length; i += itemsPerSlide) {
-    //       const slideCourses = courses.slice(i, i + itemsPerSlide);
-    //       const isActive = i === 0 ? 'active' : '';
-    //       const slide = document.createElement('div');
-    //       slide.className = `carousel-item ${isActive}`;
-    //       const row = document.createElement('div');
-    //       row.className = 'row justify-content-center';
-
-    //       slideCourses.forEach(course => {
-    //         const col = document.createElement('div');
-    //         col.className = 'col-md-4';
-    //         col.innerHTML = `
-    //           <div class="card">
-    //             <div class="card-body">
-    //               <h5 class="card-title">${course.title}</h5>
-    //               <p class="card-text">${course.desc}</p>
-    //               <a href="#" class="btn btn-outline-primary">Learn More</a>
-    //             </div>
-    //           </div>
-    //         `;
-    //         row.appendChild(col);
-    //       });
-
-    //       slide.appendChild(row);
-    //       carouselContent.appendChild(slide);
-    //     }
-    //   });
-  </script>
   
   <style>
     .hero {
@@ -195,5 +159,6 @@ $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
       font-size: 1.25rem;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

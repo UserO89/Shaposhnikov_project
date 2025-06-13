@@ -8,12 +8,12 @@
       <div class="modal-body">
         <form action="/Shaposhnikov_project/actions/user/Login.php" method="POST">
           <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" name="username" required>
+            <label for="login_username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="login_username" name="username" required>
           </div>
           <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" name="password" required>
+            <label for="login_password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="login_password" name="password" required>
           </div>
           <button type="submit" class="btn btn-primary w-100">Login</button>
         </form>

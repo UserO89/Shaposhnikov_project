@@ -79,7 +79,7 @@ class User extends Database
                 $data['last_name'],
                 $data['email'],
                 $hashed_password,
-                $data['role'] ?? 'user'
+                $data['role'] ?? 'student'
             ]);
 
             return $this->getConnection()->lastInsertId();
@@ -190,7 +190,7 @@ class User extends Database
         }
 
         // Проверка роли
-        if (isset($data['role']) && !in_array($data['role'], ['user', 'admin'])) {
+        if (isset($data['role']) && !in_array($data['role'], ['student', 'admin', 'teacher'])) {
             $errors[] = 'Invalid role';
         }
 
