@@ -14,57 +14,43 @@ if (!isset($base_path)) {
 }
 
 require_once __DIR__ . '/../../Classes/Auth.php';
-require_once __DIR__ . '/../../Classes/Database.php';
+require_once __DIR__ . '/../../Classes/Course.php'; // Убедимся, что класс Course доступен
+require_once __DIR__ . '/../../Classes/Validator.php'; // Подключаем класс Validator
 
 // Проверка прав администратора
 Auth::requireAdmin();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $db = new Database();
-        $conn = $db->getConnection();
+        $course = new Course();
+        $validator = new Validator(); // Хотя Validator может быть встроен в Course, для консистентности оставим
 
         // Получение данных из формы
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-        $title = trim($_POST['title'] ?? '');
-        $description = trim($_POST['description'] ?? '');
-        $duration = trim($_POST['duration'] ?? '');
-        $price = filter_var($_POST['price'] ?? 0, FILTER_VALIDATE_FLOAT);
-        $image = trim($_POST['image_url'] ?? '');
+        $data = [
+            'title' => trim($_POST['title'] ?? ''),
+            'description' => trim($_POST['description'] ?? ''),
+            'category' => trim($_POST['category'] ?? ''), // Добавляем категорию
+            'duration' => trim($_POST['duration'] ?? ''),
+            'price' => filter_var($_POST['price'] ?? 0, FILTER_VALIDATE_FLOAT),
+            'image' => trim($_POST['image_url'] ?? '') // Используем 'image' как ожидается в Course::update
+        ];
 
-        // Валидация данных
-        $errors = [];
         if (!$id) {
-            $errors[] = 'Неверный ID курса.';
-        }
-        if (empty($title)) {
-            $errors[] = 'Название курса обязательно.';
-        }
-        if (empty($description)) {
-            $errors[] = 'Описание курса обязательно.';
-        }
-        if (empty($duration)) {
-            $errors[] = 'Продолжительность курса обязательна.';
-        }
-        if ($price === false || $price < 0) {
-            $errors[] = 'Цена должна быть положительным числом.';
+            throw new Exception('Invalid course ID provided for update.');
         }
 
-        if (!empty($errors)) {
-            $_SESSION['errors'] = $errors;
-            header('Location: ' . $base_path . '/templates/admin/admin_courses.php');
-            exit();
-        }
+        // Обновление курса с помощью класса Course
+        // Метод update() в классе Course уже содержит вызов validateCourseData()
+        $course->update($id, $data);
 
-        // Обновление курса в базе данных
-        $stmt = $conn->prepare("UPDATE courses SET title = ?, description = ?, duration = ?, price = ?, image_url = ? WHERE id = ?");
-        $stmt->execute([$title, $description, $duration, $price, $image, $id]);
+        $_SESSION['message'] = 'The course data is changed succesfully!';
+        $_SESSION['message_type'] = 'success';
 
-        $_SESSION['success'] = 'Курс успешно обновлен.';
-
-    } catch (PDOException $e) {
-        $_SESSION['errors'][] = 'Ошибка базы данных: ' . $e->getMessage();
-        error_log("Database error updating course: " . $e->getMessage());
+    } catch (Exception $e) {
+        $_SESSION['message'] =$e->getMessage();
+        $_SESSION['message_type'] = 'danger';
+        error_log("Error updating course: " . $e->getMessage());
     }
 
     header('Location: ' . $base_path . '/templates/admin/admin_courses.php');

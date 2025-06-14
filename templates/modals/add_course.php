@@ -1,33 +1,45 @@
-<div class="modal fade" id="addCourseModal" tabindex="-1">
+<div class="modal fade" id="addCourseModal" tabindex="-1" aria-labelledby="addCourseModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add New Course</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title" id="addCourseModalLabel">Add Course</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="addCourseForm" action="<?php echo $base_path; ?>/actions/admin/add_course.php" method="POST">
+                <form action="/Shaposhnikov_project/actions/admin/add_course.php" method="POST" enctype="multipart/form-data">
                     <div class="mb-3">
-                        <label for="course_title" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="course_title" name="title" required>
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
                     </div>
                     <div class="mb-3">
-                        <label for="course_description" class="form-label">Description</label>
-                        <textarea class="form-control" id="course_description" name="description" rows="3" required></textarea>
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="course_duration" class="form-label">Duration</label>
-                        <input type="text" class="form-control" id="course_duration" name="duration" required>
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="">Select a category</option>
+                            <?php foreach ($categories as $cat): ?>
+                                <option value="<?php echo htmlspecialchars($cat['name']); ?>"><?php echo htmlspecialchars($cat['name']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                     <div class="mb-3">
-                        <label for="course_price" class="form-label">Price</label>
-                        <input type="number" class="form-control" id="course_price" name="price" step="0.01" required>
+                        <label for="duration" class="form-label">Duration (hours)</label>
+                        <input type="number" class="form-control" id="duration" name="duration" required>
                     </div>
                     <div class="mb-3">
-                        <label for="course_image" class="form-label">Image URL</label>
-                        <input type="text" class="form-control" id="course_image" name="image_url" placeholder="e.g., /assets/img/course1.jpg">
+                        <label for="price" class="form-label">Price</label>
+                        <input type="number" step="0.01" class="form-control" id="price" name="price" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Add Course</button>
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Course Image URL</label>
+                        <input type="text" class="form-control" id="image" name="image" >
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Add Course</button>
+                    </div>
                 </form>
             </div>
         </div>

@@ -51,23 +51,7 @@ try {
     error_log("Database error in course.php: " . $e->getMessage());
 }
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($course['title'] ?? 'Course Details') ?> - CourseCo</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <!-- Font Awesome for star icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body>
-    <!-- Header -->
-    <div id="header">
-        <?php include 'partials/header.php'; ?>
-    </div>
+<?php include 'partials/header.php'; ?>
 
     <main class="container my-5">
         <?php if ($course): ?>
@@ -152,36 +136,6 @@ try {
     <?php include 'partials/footer.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const enrollButton = document.getElementById('enrollButton');
-            if (enrollButton) {
-                enrollButton.addEventListener('click', function() {
-                    const courseId = this.dataset.courseId;
-                    
-                    fetch('../actions/user/EnrollCourse.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: 'course_id=' + courseId
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            alert(data.message);
-                            window.location.reload(); // Reload to show updated status
-                        } else {
-                            alert(data.message);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred during enrollment.');
-                    });
-                });
-            }
-        });
-    </script>
+    <script src="/Shaposhnikov_project/assets/js/course_details.js"></script>
 </body>
 </html>

@@ -1,9 +1,4 @@
 <?php
-// Включаем отображение ошибок
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// Проверяем, что сессия запущена
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -14,37 +9,35 @@ if (!isset($base_path)) {
 }
 
 require_once __DIR__ . '/../../Classes/Auth.php';
-require_once __DIR__ . '/../../Classes/Database.php';
+require_once __DIR__ . '/../../Classes/Course.php'; // Подключаем класс Course
 
 // Проверка прав администратора
 Auth::requireAdmin();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if (isset($_GET['id'])) { // Изменено на проверку GET-параметра 'id'
     try {
-        $db = new Database();
-        $conn = $db->getConnection();
+        $course = new Course();
 
-        // Получение ID курса из формы
-        $courseId = filter_input(INPUT_POST, 'course_id', FILTER_VALIDATE_INT);
+        // Получение ID курса из GET-параметра
+        $courseId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
         if (!$courseId) {
-            $_SESSION['errors'][] = 'Неверный ID курса.';
+            $_SESSION['errors'][] = 'Wrong course ID';
             header('Location: ' . $base_path . '/templates/admin/admin_courses.php');
             exit();
         }
 
-        // Удаление курса из базы данных
-        $stmt = $conn->prepare("DELETE FROM courses WHERE id = ?");
-        $stmt->execute([$courseId]);
+        $deleted = $course->delete($courseId);
 
-        if ($stmt->rowCount() > 0) {
-            $_SESSION['success'] = 'Курс успешно удален.';
+        if ($deleted) {
+            $_SESSION['message'] = 'Course deleted succesfully.';
+            $_SESSION['message_type'] = 'success';
         } else {
-            $_SESSION['errors'][] = 'Курс с указанным ID не найден.';
+            $_SESSION['errors'][] = 'Course not found';
         }
 
     } catch (PDOException $e) {
-        $_SESSION['errors'][] = 'Ошибка базы данных: ' . $e->getMessage();
+        $_SESSION['errors'][] = 'DB error: ' . $e->getMessage();
         error_log("Database error deleting course: " . $e->getMessage());
     }
 

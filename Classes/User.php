@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/Database.php';
+require_once __DIR__ . '/Validator.php';
 
 class User extends Database
 {
@@ -11,10 +12,12 @@ class User extends Database
     private $role;
     private $password;
     private $created_at;
+    private $validator;
 
     public function __construct()
     {
         parent::__construct();
+        $this->validator = new Validator();
     }
 
     // Получить пользователя по ID
@@ -53,16 +56,8 @@ class User extends Database
     {
         try {
             // Валидация данных
-            $this->validateUserData($data);
-
-            // Проверка на существующий email
-            if ($this->getByEmail($data['email'])) {
-                throw new Exception('Email already exists');
-            }
-
-            // Проверка на существующий username
-            if ($this->getByUsername($data['username'])) {
-                throw new Exception('Username already exists');
+            if (!$this->validator->validateUserData($data)) {
+                throw new Exception($this->validator->getFirstError());
             }
 
             // Хеширование пароля
@@ -92,8 +87,13 @@ class User extends Database
     public function update($id, $data)
     {
         try {
+            // Добавляем ID в данные для валидации
+            $data['id'] = $id;
+
             // Валидация данных
-            $this->validateUserData($data, true);
+            if (!$this->validator->validateUserData($data, true)) {
+                throw new Exception($this->validator->getFirstError());
+            }
 
             // Проверка существования пользователя
             $user = $this->getById($id);
@@ -101,25 +101,12 @@ class User extends Database
                 throw new Exception('User not found');
             }
 
-            // Проверка на существующий email (исключая текущего пользователя)
-            $existingUser = $this->getByEmail($data['email']);
-            if ($existingUser && $existingUser['id'] != $id) {
-                throw new Exception('Email already exists');
-            }
-
-            // Проверка на существующий username (исключая текущего пользователя)
-            $existingUser = $this->getByUsername($data['username']);
-            if ($existingUser && $existingUser['id'] != $id) {
-                throw new Exception('Username already exists');
-            }
-
             // Подготовка данных для обновления
             $updateData = [
                 'username' => $data['username'],
                 'first_name' => $data['first_name'],
                 'last_name' => $data['last_name'],
-                'email' => $data['email'],
-                'role' => $data['role']
+                'email' => $data['email']
             ];
 
             // Если указан новый пароль, добавляем его в обновление
@@ -159,46 +146,6 @@ class User extends Database
         }
     }
 
-    // Валидация данных пользователя
-    private function validateUserData($data, $isUpdate = false)
-    {
-        $errors = [];
-
-        // Проверка обязательных полей
-        if (empty($data['username'])) {
-            $errors[] = 'Username is required';
-        }
-        if (empty($data['first_name'])) {
-            $errors[] = 'First name is required';
-        }
-        if (empty($data['last_name'])) {
-            $errors[] = 'Last name is required';
-        }
-        if (empty($data['email'])) {
-            $errors[] = 'Email is required';
-        } elseif (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            $errors[] = 'Invalid email format';
-        }
-
-        // Проверка пароля (только для создания или если указан при обновлении)
-        if (!$isUpdate || !empty($data['password'])) {
-            if (empty($data['password'])) {
-                $errors[] = 'Password is required';
-            } elseif (strlen($data['password']) < 6) {
-                $errors[] = 'Password must be at least 6 characters long';
-            }
-        }
-
-        // Проверка роли
-        if (isset($data['role']) && !in_array($data['role'], ['student', 'admin', 'teacher'])) {
-            $errors[] = 'Invalid role';
-        }
-
-        if (!empty($errors)) {
-            throw new Exception(implode(', ', $errors));
-        }
-    }
-
     // Поиск пользователей
     public function search($query)
     {
@@ -231,5 +178,23 @@ class User extends Database
         $stmt = $this->getConnection()->prepare($sql);
         $stmt->execute([$perPage, $offset]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Получить последних N пользователей
+    public function getRecentUsers($limit = 5)
+    {
+        $sql = "SELECT * FROM users ORDER BY created_at DESC LIMIT ?";
+        $stmt = $this->getConnection()->prepare($sql);
+        $stmt->bindValue(1, $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Получить количество пользователей, зарегистрированных за последние 30 дней
+    public function getUsersCountLast30Days()
+    {
+        $sql = "SELECT COUNT(*) FROM users WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)";
+        $stmt = $this->getConnection()->query($sql);
+        return $stmt->fetchColumn();
     }
 }

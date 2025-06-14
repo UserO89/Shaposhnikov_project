@@ -5,8 +5,8 @@
                 <h5 class="modal-title">Add New User</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <form id="addUserForm" action="/Shaposhnikov_project/actions/admin/add_user.php" method="POST">
+            <form action="/Shaposhnikov_project/actions/admin/add_user.php" method="POST">
+                <div class="modal-body">
                     <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
                         <input type="text" class="form-control" id="username" name="username" required>
@@ -30,14 +30,16 @@
                     <div class="mb-3">
                         <label for="role" class="form-label">Role</label>
                         <select class="form-select" id="role" name="role" required>
-                            <option value="student">Student</option>
-                            <option value="teacher">Teacher</option>
+                            <option value="user">User</option>
                             <option value="admin">Admin</option>
                         </select>
                     </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Add User</button>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>

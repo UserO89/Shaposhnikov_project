@@ -1,0 +1,33 @@
+.card {
+    border: none;
+    border-radius: 10px;
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.form-control-plaintext {
+    font-weight: 500;
+    padding: 0.375rem 0;
+}
+
+.progress {
+    height: 8px;
+    border-radius: 4px;
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px 10px 0 0;
+}
+
+.btn {
+    border-radius: 5px;
+}
+
+.badge {
+    font-size: 0.9rem;
+    padding: 0.5em 1em;
+} 

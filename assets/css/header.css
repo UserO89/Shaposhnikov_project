@@ -1,0 +1,67 @@
+#profilePhotoPreview {
+    border: 3px solid #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+#profilePhotoPreview:hover {
+    opacity: 0.9;
+}
+
+.fa-camera {
+    font-size: 1.2rem;
+}
+
+label[for="profilePhoto"]:hover {
+    background-color: #0056b3 !important;
+}
+
+.navbar {
+    padding: 0.5rem 1rem;
+    min-height: 60px;
+}
+
+.navbar-brand {
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-logo {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+}
+
+.navbar-nav {
+    align-items: center;
+}
+
+.nav-link {
+    padding: 0.5rem 1rem;
+}
+
+.dropdown-menu {
+    background-color: #343a40;
+}
+
+.dropdown-item {
+    color: #fff;
+}
+
+.dropdown-item:hover {
+    background-color: #495057;
+    color: #fff;
+}
+
+.logout-link {
+    color: rgba(255,255,255,.55); /* Default color for logout link */
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: color 0.3s ease; 
+}
+
+.logout-link:hover {
+    color: #dc3545; 
+}

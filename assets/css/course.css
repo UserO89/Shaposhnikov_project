@@ -1,0 +1,59 @@
+/* Basic styling for the filter sidebar */
+.filter-sidebar {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.filter-sidebar .card-header {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.filter-sidebar .form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.filter-sidebar .btn-primary {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.filter-sidebar .btn-secondary {
+    width: 100%;
+}
+
+/* Adjustments for course cards within the new layout */
+.course-listings .card {
+    margin-bottom: 1.5rem;
+}
+
+.course-listings .card-img-top {
+    height: 180px; /* Fixed height for consistent image size */
+    object-fit: cover;
+}
+
+.course-listings .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Pushes button to the bottom */
+}
+
+.course-listings .card-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.course-listings .card-text {
+    font-size: 0.95rem;
+    color: #555;
+    margin-bottom: 0.5rem;
+}
+
+.course-listings .btn-outline-primary {
+    margin-top: auto; /* Pushes the button to the bottom */
+}

@@ -2,18 +2,15 @@
 session_start();
 require_once '../../Classes/User.php';
 require_once '../../Classes/Auth.php';
+require_once '../../Classes/Validator.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = new User();
     $auth = new Auth();
+    $validator = new Validator();
     
     try {
-        // Проверяем, что все поля пришли
-        if (empty($_POST['username']) || empty($_POST['email']) || empty($_POST['password']) || 
-            empty($_POST['first_name']) || empty($_POST['last_name'])) {
-            throw new Exception("All fields are required");
-        }
-
+        // Prepare user data
         $userData = [
             'username' => trim($_POST['username']),
             'email' => trim($_POST['email']),
@@ -23,42 +20,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'role' => 'student'
         ];
         
-        // Проверяем совпадение паролей
+        // Validate data
+        if (!$validator->validateUserData($userData)) {
+            throw new Exception($validator->getFirstError());
+        }
+        
+        // Check password confirmation
         if ($_POST['password'] !== $_POST['confirm_password']) {
             throw new Exception("Passwords do not match");
         }
         
-        // Проверяем длину пароля
-        if (strlen($_POST['password']) < 6) {
-            throw new Exception("Password must be at least 6 characters long");
+        // Create user
+        $userId = $user->create($userData);
+        if (!$userId) {
+            throw new Exception("Failed to create user - no ID returned");
         }
         
-        // Проверяем формат email
-        if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
-            throw new Exception("Invalid email format");
+        // Login after registration
+        $loginResult = $auth->login($userData['username'], $userData['password']);
+        if (!$loginResult) {
+            throw new Exception("Failed to login after registration");
         }
         
-        // Пробуем создать пользователя
-        try {
-            $userId = $user->create($userData);
-            if (!$userId) {
-                throw new Exception("Failed to create user - no ID returned");
-            }
-        } catch (Exception $e) {
-            throw new Exception("Error creating user: " . $e->getMessage());
-        }
-        
-        // Пробуем войти
-        try {
-            $loginResult = $auth->login($userData['username'], $userData['password']);
-            if (!$loginResult) {
-                throw new Exception("Failed to login after registration");
-            }
-        } catch (Exception $e) {
-            throw new Exception("Error during login: " . $e->getMessage());
-        }
-        
-        $_SESSION['success'] = "Succesful registration! Welcome to your account";
+        $_SESSION['success'] = "Successful registration! Welcome to your account";
         header("Location: ../../index.php");
         exit();
         

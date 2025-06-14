@@ -1,0 +1,122 @@
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    margin-bottom: 1rem;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.list-group-item {
+    border: none;
+    padding: 0.75rem 1.25rem;
+}
+
+.list-group-item.active {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.table th {
+    border-top: none;
+}
+
+.badge {
+    padding: 0.5em 0.75em;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.alert {
+    margin-bottom: 1rem;
+}
+
+.sidebar {
+    min-height: 100vh;
+    padding-top: 20px;
+    /* background-color: #f8f9fa; Очень светло-серый - УДАЛЕНО */
+    border-right: 1px solid #e9ecef; /* Добавляем тонкую границу справа */
+}
+
+.sidebar .nav-link {
+    font-weight: 500;
+    color: #ced4da; /* Более светлый серый для лучшей читаемости на темном фоне */
+    padding: 10px 15px;
+    margin-bottom: 5px;
+    border-radius: 0.375rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #343a40; /* Чуть более темный фон при наведении для subtle эффекта */
+    color: #fff;
+}
+
+.sidebar .nav-link.active {
+    background-color: #007bff; /* Стандартный синий Bootstrap, но можно настроить */
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3); /* Более мягкая тень */
+    border-left: 5px solid #0056b3; /* Более заметная полоса слева */
+    padding-left: 10px;
+}
+
+.sidebar .nav-link .fas {
+    margin-right: 10px;
+}
+
+/* Admin Dashboard Card Styling */
+.card.bg-primary {
+    background-color: #e0f2f7 !important; /* Очень светло-голубой */
+}
+
+.card.bg-success {
+    background-color: #e6ffe6 !important; /* Очень светло-зеленый */
+}
+
+.card.bg-info {
+    background-color: #e0f2f7 !important; /* Такой же как primary для консистентности */
+}
+
+.card.bg-warning {
+    background-color: #fff9e6 !important; /* Очень светло-желтый */
+}
+
+/* Установка темного текста для всех элементов на этих светлых карточках */
+.card.text-white .card-title,
+.card.text-white .card-text,
+.card.text-white .fas {
+    color: #343a40 !important; /* Темно-серый для текста */
+}
+
+/* Настройка заголовков карточек для последних действий и быстрых действий */
+.card-header.bg-dark {
+    background-color: #f8f9fa !important; /* Светло-серый заголовок */
+    color: #343a40 !important; /* Темный текст для заголовка */
+    border-bottom: 1px solid #dee2e6; /* Добавить тонкую границу */
+}
+
+/* Настройка элементов списка в недавних регистрациях пользователей для лучшей визуализации */
+.list-group-item {
+    background-color: #f8f9fa; /* Светлый фон для элементов списка */
+    color: #343a40; /* Темный текст */
+    border-color: #e9ecef; /* Светлая граница */
+}
+
+.list-group-item .badge {
+    background-color: #6c757d !important; /* Приглушенный серый для значка */
+    color: #fff !important;
+}
+
+/* Кнопки быстрых действий - сохранить стандартные стили Bootstrap, но обеспечить единообразие */
+.btn-primary.btn-lg,
+.btn-success.btn-lg,
+.btn-info.btn-lg,
+.btn-warning.btn-lg {
+    font-weight: 500; /* Немного более жирный текст */
+} 

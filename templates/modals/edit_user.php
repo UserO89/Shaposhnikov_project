@@ -5,9 +5,9 @@
                 <h5 class="modal-title">Edit User</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <form id="editUserForm" action="/Shaposhnikov_project/actions/admin/edit_user.php" method="POST">
-                    <input type="hidden" id="edit_user_id" name="id">
+            <form action="/Shaposhnikov_project/actions/admin/edit_user.php" method="POST">
+                <input type="hidden" id="edit_user_id" name="user_id">
+                <div class="modal-body">
                     <div class="mb-3">
                         <label for="edit_username" class="form-label">Username</label>
                         <input type="text" class="form-control" id="edit_username" name="username" required>
@@ -25,20 +25,23 @@
                         <input type="email" class="form-control" id="edit_email" name="email" required>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_role" class="form-label">Role</label>
-                        <select class="form-select" id="edit_role" name="role" required>
-                            <option value="student">Stunent</option>
-                            <option value="admin">Admin</option>
-                            <option value='teacher'>Teacher</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
                         <label for="edit_password" class="form-label">New Password (leave blank to keep current)</label>
                         <input type="password" class="form-control" id="edit_password" name="password">
                     </div>
+                    <div class="mb-3">
+                        <label for="edit_role" class="form-label">Role</label>
+                        <select class="form-select" id="edit_role" name="role" required>
+                            <option value="student">Student</option>
+                            <option value="admin">Admin</option>
+                            <option value="teacher">Teacher</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Changes</button>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>

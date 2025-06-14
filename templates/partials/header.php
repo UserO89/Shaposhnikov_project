@@ -11,6 +11,8 @@ if (session_status() === PHP_SESSION_NONE) {
   <link rel="icon" type="image/png" href="/Shaposhnikov_project/assets/img/logo.png">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="/Shaposhnikov_project/assets/css/style.css">
+  <link rel="stylesheet" href="/Shaposhnikov_project/assets/css/admin.css">
+  <link rel="stylesheet" href="/Shaposhnikov_project/assets/css/header.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
@@ -31,9 +33,8 @@ if (session_status() === PHP_SESSION_NONE) {
             </li>
             <?php if (isset($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'admin'): ?>
                 <li class="nav-item">
-                    <a class="nav-link" href="/Shaposhnikov_project/templates/admin/admin_courses.php">Manage Courses</a>
+                    <a class="nav-link" href="/Shaposhnikov_project/templates/admin/admin_dashboard.php">Admin</a>
                 </li>
-
             <?php endif; ?>
         <?php endif; ?>
       </ul>
@@ -45,7 +46,7 @@ if (session_status() === PHP_SESSION_NONE) {
             </li>
             <li class="nav-item">
                 <form action="/Shaposhnikov_project/actions/user/Logout.php" method="POST">
-                    <button type="submit" class="nav-link" style="background: none; border: none; padding: 0; cursor: pointer; color: rgba(255,255,255,.55);">Logout</button>
+                    <button type="submit" class="nav-link logout-link">Logout</button>
                 </form>
             </li>
         <?php else: ?>
@@ -61,48 +62,9 @@ if (session_status() === PHP_SESSION_NONE) {
   </div>
 </nav>
 
-<style>
-.navbar {
-  padding: 0.5rem 1rem;
-  min-height: 60px;
-}
-
-.navbar-brand {
-  padding: 0;
-  display: flex;
-  align-items: center;
-}
-
-.navbar-logo {
-  height: 40px;
-  width: auto;
-  object-fit: contain;
-}
-
-.navbar-nav {
-  align-items: center;
-}
-
-.nav-link {
-  padding: 0.5rem 1rem;
-}
-
-.dropdown-menu {
-  background-color: #343a40;
-}
-
-.dropdown-item {
-  color: #fff;
-}
-
-.dropdown-item:hover {
-  background-color: #495057;
-  color: #fff;
-}
-</style>
-
 <?php require_once __DIR__ . '/../modals/login_modal.php'?>
 <?php require_once __DIR__ . '/../modals/register_modal.php'?>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/Shaposhnikov_project/assets/js/theme_toggle.js"></script>
 </body>
 </html>

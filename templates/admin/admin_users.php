@@ -1,217 +1,123 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 // Включаем отображение ошибок
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 require_once __DIR__ . '/../../Classes/Auth.php';
-require_once __DIR__ . '/../../Classes/Database.php';
+require_once __DIR__ . '/../../Classes/User.php';
+
+$auth = new Auth();
+Auth::requireAdmin(); // Ensure admin access
+
+$user = new User();
+
+$users = $user->getAll();
+
+// Include header after all PHP operations
 require_once __DIR__ . '/../partials/header.php';
-
-
-// Проверка прав администратора
-Auth::requireAdmin();
-
-// Получение списка пользователей
-try {
-    $db = new Database();
-    $conn = $db->getConnection();
-    $stmt = $conn->query("SELECT id, username, first_name, last_name, email, role, created_at FROM users ORDER BY created_at DESC");
-    $users = $stmt->fetchAll();
-} catch (PDOException $e) {
-    die("Database error: " . $e->getMessage());
-}
 ?>
 
-<main class="container my-5">
+<div class="container-fluid">
     <div class="row">
         <!-- Sidebar -->
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Admin Panel</h5>
-                </div>
-                <div class="list-group list-group-flush">
-
-                    <a href="admin_users.php" class="list-group-item list-group-item-action active">
-                        <i class="fas fa-users me-2"></i> Users
-                    </a>
-                    <a href="admin_courses.php" class="list-group-item list-group-item-action">
-                        <i class="fas fa-book me-2"></i> Courses
-                    </a>
-                </div>
+        <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Shaposhnikov_project/templates/admin/admin_dashboard.php">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active text-white" href="/Shaposhnikov_project/templates/admin/admin_users.php">
+                            <i class="fas fa-users me-2"></i>
+                            Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/Shaposhnikov_project/templates/admin/admin_courses.php">
+                            <i class="fas fa-book me-2"></i>
+                            Courses
+                        </a>
+                    </li>
+                </ul>
             </div>
-        </div>
+        </nav>
 
-        <!-- Main Content -->
-        <div class="col-md-9">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>User Management</h2>
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">User Management</h1>
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
                     <i class="fas fa-plus"></i> Add User
                 </button>
             </div>
 
-            <!-- Messages -->
-            <?php if (isset($_SESSION['errors']) && !empty($_SESSION['errors'])): ?>
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <ul class="mb-0">
-                        <?php foreach ($_SESSION['errors'] as $error): ?>
-                            <li><?php echo htmlspecialchars($error); ?></li>
+            <?php if (isset($_SESSION['message'])): ?>
+                <div class="alert alert-<?php echo $_SESSION['message_type']; ?> alert-dismissible fade show" role="alert">
+                    <?php 
+                    echo $_SESSION['message'];
+                    unset($_SESSION['message']);
+                    unset($_SESSION['message_type']);
+                    ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($users as $user): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($user['id']); ?></td>
+                            <td><?php echo htmlspecialchars($user['username']); ?></td>
+                            <td><?php echo htmlspecialchars($user['first_name']); ?></td>
+                            <td><?php echo htmlspecialchars($user['last_name']); ?></td>
+                            <td><?php echo htmlspecialchars($user['email']); ?></td>
+                            <td>
+                                <span class="badge bg-<?php echo $user['role'] === 'admin' ? 'danger' : 'primary'; ?>">
+                                    <?php echo htmlspecialchars($user['role']); ?>
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" onclick="editUser(<?php echo htmlspecialchars(json_encode($user)); ?>)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteUser(<?php echo $user['id']; ?>)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
                         <?php endforeach; ?>
-                    </ul>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-                <?php unset($_SESSION['errors']); ?>
-            <?php endif; ?>
-
-            <?php if (isset($_SESSION['success'])): ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <?php echo htmlspecialchars($_SESSION['success']); ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-                <?php unset($_SESSION['success']); ?>
-            <?php endif; ?>
-
-            <!-- Users Table -->
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Username</th>
-                                    <th>Name</th>
-                                    <th>Surname</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Registered</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($users as $user): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($user['username']); ?></td>
-                                    <td><?php echo htmlspecialchars($user['first_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($user['last_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($user['email']); ?></td>
-                                    <td>
-                                        <span class="badge bg-<?php echo $user['role'] === 'admin' ? 'danger' : 'primary'; ?>">
-                                            <?php echo ucfirst($user['role']); ?>
-                                        </span>
-                                    </td>
-                                    <td><?php echo date('M d, Y', strtotime($user['created_at'])); ?></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-primary" onclick="editUser(<?php echo $user['id']; ?>)">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <form action="../../actions/admin/delete_user.php" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete <?php echo $user['first_name']. ' ' . $user['last_name']?>?');">
-                                            <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                    </tbody>
+                </table>
             </div>
-        </div>
+        </main>
     </div>
-</main>
+</div>
 
 <!-- Add User Modal -->
-<?php include_once "../modals/add_user.php" ?>
+<?php require_once __DIR__ . '/../modals/add_user.php'; ?>
 
 <!-- Edit User Modal -->
-<?php include_once "../modals/edit_user.php" ?>
+<?php require_once __DIR__ . '/../modals/edit_user.php'; ?>
 
-<!-- Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/Shaposhnikov_project/assets/js/admin_users.js"></script>
 
-<style>
-.card {
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    margin-bottom: 1rem;
-}
-
-.list-group-item {
-    border: none;
-    padding: 0.75rem 1.25rem;
-}
-
-.list-group-item.active {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-}
-
-.table th {
-    border-top: none;
-}
-
-.badge {
-    padding: 0.5em 0.75em;
-}
-
-.btn-sm {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-}
-
-.alert {
-    margin-bottom: 1rem;
-}
-</style>
-
-<script>
-function editUser(userId) {
-    // Fetch user data from the server
-    fetch(`/Shaposhnikov_project/actions/admin/get_user.php?id=${userId}`)
-        .then(response => response.json())
-        .then(user => {
-            if (user) {
-                // Populate the form with user data
-                document.getElementById('edit_user_id').value = user.id;
-                document.getElementById('edit_username').value = user.username;
-                document.getElementById('edit_first_name').value = user.first_name;
-                document.getElementById('edit_last_name').value = user.last_name;
-                document.getElementById('edit_email').value = user.email;
-                document.getElementById('edit_role').value = user.role;
-                document.getElementById('edit_password').value = ''; // Clear password field
-
-                // Show the modal
-                const editModal = new bootstrap.Modal(document.getElementById('editUserModal'));
-                editModal.show();
-            } else {
-                console.error('User not found');
-                alert('Error: User not found');
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching user data:', error);
-            alert('Error loading user data');
-        });
-}
-
-// Add form validation
-document.getElementById('editUserForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Basic validation
-    const password = document.getElementById('edit_password').value;
-    if (password && password.length < 6) {
-        alert('Password must be at least 6 characters long');
-        return;
-    }
-
-    // If validation passes, submit the form
-    this.submit();
-});
-</script>
-
-<?php require_once __DIR__ . '/../partials/footer.php'; ?>
-</body>
-</html> 
+<?php require_once __DIR__ . '/../partials/footer.php'; ?> 

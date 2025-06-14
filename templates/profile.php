@@ -26,9 +26,11 @@ $activeCourses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
+<link rel="stylesheet" href="/Shaposhnikov_project/assets/css/profile.css">
+
 <main class="container-fluid py-4">
     <div class="row">
-        <!-- Левая колонка с информацией профиля -->
+
         <div class="col-md-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-primary text-white">
@@ -67,7 +69,6 @@ $activeCourses = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
 
-        <!-- Правая колонка с активными курсами -->
         <div class="col-md-8">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
@@ -77,7 +78,7 @@ $activeCourses = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </a>
                 </div>
                 <div class="card-body">
-                    <!-- Здесь будет список активных курсов -->
+
                     <?php if (!empty($activeCourses)): ?>
                     <div class="row g-4">
                         <?php foreach ($activeCourses as $course): ?>
@@ -112,42 +113,6 @@ $activeCourses = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 </main>
-
-<style>
-.card {
-    border: none;
-    border-radius: 10px;
-}
-
-.card-header {
-    border-radius: 10px 10px 0 0 !important;
-}
-
-.form-control-plaintext {
-    font-weight: 500;
-    padding: 0.375rem 0;
-}
-
-.progress {
-    height: 8px;
-    border-radius: 4px;
-}
-
-.card-img-top {
-    height: 200px;
-    object-fit: cover;
-    border-radius: 10px 10px 0 0;
-}
-
-.btn {
-    border-radius: 5px;
-}
-
-.badge {
-    font-size: 0.9rem;
-    padding: 0.5em 1em;
-}
-</style>
 
 <?php include_once __DIR__ . '/modals/edit_modal.php'; ?>
 <?php require_once __DIR__ . '/partials/footer.php';?> 
