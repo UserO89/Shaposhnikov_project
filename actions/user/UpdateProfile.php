@@ -3,6 +3,7 @@ session_start();
 require_once __DIR__ . '/../../Classes/Auth.php';
 require_once __DIR__ . '/../../Classes/User.php';
 require_once __DIR__ . '/../../Classes/Validator.php';
+require_once __DIR__ . '/../../Classes/SessionMessage.php';
 
 error_log('UpdateProfile.php: Script started.');
 error_log('UpdateProfile.php: POST data: ' . print_r($_POST, true));
@@ -10,7 +11,9 @@ error_log('UpdateProfile.php: POST data: ' . print_r($_POST, true));
 try {
     if (!isset($_SESSION['user']['id'])) {
         error_log('UpdateProfile.php: User not authenticated. Session user_id missing.');
-        throw new Exception('User not authenticated');
+        SessionMessage::set('danger', 'User not authenticated');
+        header('Location: /Shaposhnikov_project/templates/profile.php');
+        exit();
     }
 
     $auth = new Auth();
@@ -18,7 +21,9 @@ try {
 
     if (!$user) {
         error_log('UpdateProfile.php: Authenticated user not found in database.');
-        throw new Exception('User not found');
+        SessionMessage::set('danger', 'User not found');
+        header('Location: /Shaposhnikov_project/templates/profile.php');
+        exit();
     }
 
     // Prepare user data for update
@@ -41,20 +46,22 @@ try {
     if (!$validator->validateUserData($userData, true)) {
         $errors = $validator->getErrors();
         error_log('UpdateProfile.php: Validation errors: ' . print_r($errors, true));
-        throw new Exception($validator->getFirstError());
+        SessionMessage::set('danger', $validator->getFirstError());
+        header('Location: /Shaposhnikov_project/templates/profile.php');
+        exit();
     }
 
     // Update user profile using User class
     $userObj = new User();
     $userObj->update($user['id'], $userData);
 
-    $_SESSION['success_message'] = 'Profile updated successfully';
+    SessionMessage::set('success', 'Profile updated successfully');
     header('Location: /Shaposhnikov_project/templates/profile.php');
     exit();
 
 } catch (Exception $e) {
     error_log('UpdateProfile.php: Caught exception: ' . $e->getMessage());
-    $_SESSION['error_message'] = $e->getMessage();
+    SessionMessage::set('danger', $e->getMessage());
     header('Location: /Shaposhnikov_project/templates/profile.php');
     exit();
 } 

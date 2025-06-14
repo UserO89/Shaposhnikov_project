@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../Classes/Course.php';
+require_once __DIR__ . '/../config/app.php'; // Include the central config file
 
 $course = new Course();
 $courses = [];
@@ -36,8 +37,8 @@ try {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>All Courses - CourseCo</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="../assets/css/style.css">
-  <link rel="stylesheet" href="../assets/css/course.css">
+  <link rel="stylesheet" href="<?= BASE_PATH ?>/assets/css/style.css">
+  <link rel="stylesheet" href="<?= BASE_PATH ?>/assets/css/course.css">
 </head>
 <body>
   <!-- Header -->
@@ -54,7 +55,7 @@ try {
             <div class="card mb-4">
                 <div class="card-header">Filter Courses</div>
                 <div class="card-body">
-                    <form action="courses.php" method="GET">
+                    <form action="<?= BASE_PATH ?>/templates/courses.php" method="GET">
                         <div class="mb-3">
                             <label for="categoryFilter" class="form-label">Category</label>
                             <select class="form-select" id="categoryFilter" name="category">
@@ -80,7 +81,7 @@ try {
                             <input type="number" class="form-control" id="durationFilter" name="max_duration" value="<?php echo htmlspecialchars($_GET['max_duration'] ?? ''); ?>">
                         </div>
                         <button type="submit" class="btn btn-primary">Apply Filters</button>
-                        <a href="courses.php" class="btn btn-secondary mt-2">Clear Filters</a>
+                        <a href="<?= BASE_PATH ?>/templates/courses.php" class="btn btn-secondary mt-2">Clear Filters</a>
                     </form>
                 </div>
             </div>
@@ -93,14 +94,14 @@ try {
                     <?php foreach ($courses as $course): ?>
                         <div class="col-md-4 mb-4">
                             <div class="card h-100">
-                                <img src="<?= htmlspecialchars($course['image_url'] ?? 'https://via.placeholder.com/400x200') ?>" class="card-img-top" alt="Course image">
+                                <img src="<?= htmlspecialchars($course['image_url'] ?? BASE_PATH . '/assets/img/400x200.png') ?>" class="card-img-top" alt="Course image">
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title"><?= htmlspecialchars($course['title']) ?></h5>
                                     <p class="card-text"><?= htmlspecialchars($course['description']) ?></p>
                                     <p class="card-text"><strong>Category:</strong> <?= htmlspecialchars($course['category'] ?? 'N/A') ?></p>
                                     <p class="card-text"><strong>Duration:</strong> <?= htmlspecialchars($course['duration'] ?? 'N/A') ?> hours</p>
                                     <p class="card-text"><strong>Price:</strong> $<?= htmlspecialchars($course['price'] ?? 'N/A') ?></p>
-                                    <a href="course.php?id=<?= htmlspecialchars($course['id']) ?>" class="btn btn-outline-primary mt-auto">View Details</a>
+                                    <a href="<?= BASE_PATH ?>/templates/course.php?id=<?= htmlspecialchars($course['id']) ?>" class="btn btn-outline-primary mt-auto">View Details</a>
                                 </div>
                             </div>
                         </div>

@@ -3,6 +3,7 @@ session_start();
 require_once '../../Classes/User.php';
 require_once '../../Classes/Auth.php';
 require_once '../../Classes/Validator.php';
+require_once '../../Classes/SessionMessage.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = new User();
@@ -42,13 +43,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception("Failed to login after registration");
         }
         
-        $_SESSION['success'] = "Successful registration! Welcome to your account";
+        SessionMessage::set('success', "Successful registration! Welcome to your account");
         header("Location: ../../index.php");
         exit();
         
     } catch (Exception $e) {
         error_log("Registration error: " . $e->getMessage());
-        $_SESSION['error'] = $e->getMessage();
+        SessionMessage::set('danger', $e->getMessage());
         header("Location: ../../index.php");
         exit();
     }

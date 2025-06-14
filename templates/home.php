@@ -2,6 +2,7 @@
 require_once __DIR__ . '/partials/header.php';
 require_once __DIR__ . '/../Classes/Database.php';
 require_once __DIR__ . '/../Classes/Course.php';
+require_once __DIR__ . '/../Classes/SessionMessage.php';
 
 $courses = [];
 $reviews = [];
@@ -19,6 +20,15 @@ $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <section class="hero text-center text-light d-flex align-items-center justify-content-center">
     <div>
+        <?php
+        if (SessionMessage::hasMessages()) {
+            $message = SessionMessage::get();
+            echo '<div class="alert alert-' . htmlspecialchars($message['type']) . ' alert-dismissible fade show" role="alert">';
+            echo htmlspecialchars($message['message']);
+            echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+            echo '</div>';
+        }
+        ?>
         <h1 class="display-4">Master New Skills Online</h1>
         <p class="lead">Explore our wide selection of professional courses</p>
         <a href="/Shaposhnikov_project/templates/courses.php" class="btn btn-lg btn-primary">Browse Courses</a>

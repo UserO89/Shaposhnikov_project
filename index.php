@@ -1,13 +1,14 @@
 <?php
-session_start();
+require_once __DIR__ . '/config/app.php'; // Включаем центральный файл конфигурации
+
 require_once __DIR__ . '/Classes/Auth.php';
 
 $auth = new Auth();
 
 if ($auth->isLoggedIn()) {
-    header('Location: /Shaposhnikov_project/templates/profile.php');
+    header('Location: ' . BASE_PATH . '/templates/profile.php');
     exit();
 } else {
-    header('Location: /Shaposhnikov_project/templates/home.php');
+    header('Location: ' . BASE_PATH . '/templates/home.php');
     exit();
 }

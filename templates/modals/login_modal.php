@@ -6,7 +6,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form action="/Shaposhnikov_project/actions/user/Login.php" method="POST">
+        <form action="<?= BASE_PATH ?>/actions/user/Login.php" method="POST">
           <div class="mb-3">
             <label for="login_username" class="form-label">Username</label>
             <input type="text" class="form-control" id="login_username" name="username" required>

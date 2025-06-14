@@ -1,11 +1,10 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/../../config/app.php'; // Include the central config file
 
 require_once __DIR__ . '/../../Classes/Auth.php';
 require_once __DIR__ . '/../../Classes/User.php';
 require_once __DIR__ . '/../../Classes/Course.php';
+require_once __DIR__ . '/../../Classes/SessionMessage.php'; // Add this line
 
 $auth = new Auth();
 Auth::requireAdmin();
@@ -29,19 +28,19 @@ require_once __DIR__ . '/../partials/header.php';
             <div class="position-sticky pt-3">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link active text-white" href="/Shaposhnikov_project/templates/admin/admin_dashboard.php">
+                        <a class="nav-link active text-white" href="<?= BASE_PATH ?>/templates/admin/admin_dashboard.php">
                             <i class="fas fa-tachometer-alt me-2"></i>
                             Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="/Shaposhnikov_project/templates/admin/admin_users.php">
+                        <a class="nav-link text-white" href="<?= BASE_PATH ?>/templates/admin/admin_users.php">
                             <i class="fas fa-users me-2"></i>
                             Users
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="/Shaposhnikov_project/templates/admin/admin_courses.php">
+                        <a class="nav-link text-white" href="<?= BASE_PATH ?>/templates/admin/admin_courses.php">
                             <i class="fas fa-book me-2"></i>
                             Courses
                         </a>
@@ -56,16 +55,15 @@ require_once __DIR__ . '/../partials/header.php';
                 <h1 class="h2">Admin Dashboard</h1>
             </div>
 
-            <?php if (isset($_SESSION['message'])): ?>
-                <div class="alert alert-<?php echo $_SESSION['message_type']; ?> alert-dismissible fade show" role="alert">
-                    <?php 
-                    echo $_SESSION['message'];
-                    unset($_SESSION['message']);
-                    unset($_SESSION['message_type']);
-                    ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            <?php endif; ?>
+            <?php
+            if (SessionMessage::hasMessages()) {
+                $message = SessionMessage::get();
+                echo '<div class="alert alert-' . htmlspecialchars($message['type']) . ' alert-dismissible fade show" role="alert">';
+                echo htmlspecialchars($message['message']);
+                echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+                echo '</div>';
+            }
+            ?>
 
             <div class="row">
                 <div class="col-md-6 col-lg-3 mb-4">
@@ -136,10 +134,10 @@ require_once __DIR__ . '/../partials/header.php';
                         </div>
                         <div class="card-body">
                             <div class="d-grid gap-2">
-                                <a href="/Shaposhnikov_project/templates/admin/admin_users.php" class="btn btn-primary btn-lg">
+                                <a href="<?= BASE_PATH ?>/templates/admin/admin_users.php" class="btn btn-primary btn-lg">
                                     <i class="fas fa-users-cog me-2"></i> Manage Users
                                 </a>
-                                <a href="/Shaposhnikov_project/templates/admin/admin_courses.php" class="btn btn-success btn-lg">
+                                <a href="<?= BASE_PATH ?>/templates/admin/admin_courses.php" class="btn btn-success btn-lg">
                                     <i class="fas fa-book-open me-2"></i> Manage Courses
                                 </a>
                                 <button class="btn btn-info btn-lg" data-bs-toggle="modal" data-bs-target="#addUserModal">

@@ -3,13 +3,14 @@ session_start();
 require_once __DIR__ . '/../../Classes/Auth.php';
 require_once __DIR__ . '/../../Classes/User.php';
 require_once __DIR__ . '/../../Classes/Validator.php';
+require_once __DIR__ . '/../../Classes/SessionMessage.php';
 
 Auth::requireAdmin();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         // Get user ID
-        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+        $id = filter_input(INPUT_POST, 'user_id', FILTER_VALIDATE_INT);
         if (!$id) {
             throw new Exception('Invalid user ID');
         }
@@ -32,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Validate data
         $validator = new Validator();
         if (!$validator->validateUserData($userData, true)) {
-            $_SESSION['errors'] = $validator->getErrors();
+            SessionMessage::set('danger', $validator->getFirstError());
             header('Location: /Shaposhnikov_project/templates/admin/admin_users.php');
             exit();
         }
@@ -40,15 +41,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Update user
         $user = new User();
         if ($user->update($id, $userData)) {
-            $_SESSION['success'] = 'User updated successfully';
+            SessionMessage::set('success', 'User updated successfully');
         } else {
             throw new Exception('Failed to update user');
         }
     } catch (Exception $e) {
-        $_SESSION['errors'] = ['Error: ' . $e->getMessage()];
+        SessionMessage::set('danger', 'Error: ' . $e->getMessage());
     }
 } else {
-    $_SESSION['errors'] = ['Invalid request method'];
+    SessionMessage::set('danger', 'Invalid request method');
 }
 
 header('Location: /Shaposhnikov_project/templates/admin/admin_users.php');

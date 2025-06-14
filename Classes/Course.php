@@ -3,15 +3,6 @@ require_once __DIR__ . '/Database.php';
 
 class Course extends Database
 {
-    private $id;
-    private $title;
-    private $description;
-    private $category_id;
-    private $duration;
-    private $price;
-    private $image_url;
-    private $created_at;
-
     public function __construct()
     {
         parent::__construct();
@@ -29,11 +20,7 @@ class Course extends Database
     // Получить курс по ID
     public function getById($id)
     {
-        $sql = "SELECT c.*, cat.name AS category 
-                FROM courses c 
-                JOIN categories cat ON c.category_id = cat.id 
-                WHERE c.id = ?";
-        $stmt = $this->getConnection()->prepare($sql);
+        $stmt = $this->getConnection()->prepare("SELECT c.*, cat.name AS category FROM courses c JOIN categories cat ON c.category_id = cat.id WHERE c.id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
@@ -46,7 +33,6 @@ class Course extends Database
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Получить все курсы  -----------------------------------------------------
     public function getAll()
     {
         $sql = "SELECT c.*, cat.name AS category 
@@ -57,7 +43,6 @@ class Course extends Database
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Создать новый курс --------------------------------------------------------
     public function create($data)
     {
         try {
@@ -212,24 +197,6 @@ class Course extends Database
         }
     }
 
-    // Поиск курсов -----------------------------------------------------------------------------
-    public function search($query)
-    {
-        $search = "%$query%";
-        $sql = "SELECT c.*, cat.name AS category 
-                FROM courses c 
-                JOIN categories cat ON c.category_id = cat.id 
-                WHERE c.title LIKE ? 
-                OR c.description LIKE ? 
-                OR c.duration LIKE ? 
-                OR cat.name LIKE ? 
-                ORDER BY c.created_at DESC";
-        
-        $stmt = $this->getConnection()->prepare($sql);
-        $stmt->execute([$search, $search, $search, $search]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
     // Получить количество курсов  -----------------------------------------------------------------------------
     public function getCount()
     {
@@ -237,78 +204,21 @@ class Course extends Database
         return $stmt->fetchColumn();
     }
 
-    // Получить курсы с пагинацией ------------------------------------------------------------------------------------
-    public function getPaginated($page = 1, $perPage = 10)
-    {
-        $offset = ($page - 1) * $perPage;
-        $sql = "SELECT c.*, cat.name AS category FROM courses c JOIN categories cat ON c.category_id = cat.id ORDER BY c.created_at DESC LIMIT ? OFFSET ?";
-        
-        $stmt = $this->getConnection()->prepare($sql);
-        $stmt->execute([$perPage, $offset]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    // Получить курсы по цене (фильтр) ------------------------------------------------------------------------------------------
-    public function getByPriceRange($minPrice, $maxPrice)
-    {
-        $sql = "SELECT c.*, cat.name AS category FROM courses c JOIN categories cat ON c.category_id = cat.id WHERE c.price >= ? AND c.price <= ? ORDER BY c.price ASC";
-        $stmt = $this->getConnection()->prepare($sql);
-        $stmt->execute([$minPrice, $maxPrice]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    // Получить курсы по длительности (фильтр) -----------------------------------------------------------
-    public function getByDuration($duration)
-    {
-        $sql = "SELECT c.*, cat.name AS category FROM courses c JOIN categories cat ON c.category_id = cat.id WHERE c.duration = ? ORDER BY c.created_at DESC";
-        $stmt = $this->getConnection()->prepare($sql);
-        $stmt->execute([$duration]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    // Получить самые популярные курсы (по количеству записей) -----------------------------------------------------
-    public function getPopular($limit = 5)
-    {
-        $sql = "SELECT c.*, cat.name AS category, COUNT(e.id) as enrollment_count 
-                FROM courses c 
-                LEFT JOIN enrollments e ON c.id = e.course_id 
-                JOIN categories cat ON c.category_id = cat.id 
-                GROUP BY c.id 
-                ORDER BY enrollment_count DESC 
-                LIMIT ?";
-        $stmt = $this->getConnection()->prepare($sql);
-        $stmt->bindValue(1, $limit, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    // Получить последние N курсов
     public function getRecentCourses($limit = 5)
     {
-        $sql = "SELECT c.*, cat.name AS category FROM courses c JOIN categories cat ON c.category_id = cat.id ORDER BY c.created_at DESC LIMIT ?";
-        $stmt = $this->getConnection()->prepare($sql);
+        $stmt = $this->getConnection()->prepare("SELECT * FROM courses ORDER BY created_at DESC LIMIT ?");
         $stmt->bindValue(1, $limit, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Получить количество курсов, добавленных за последние 30 дней
     public function getCoursesCountLast30Days()
     {
-        $sql = "SELECT COUNT(c.id) FROM courses c JOIN categories cat ON c.category_id = cat.id WHERE c.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)";
-        $stmt = $this->getConnection()->query($sql);
+        $stmt = $this->getConnection()->query("SELECT COUNT(*) FROM courses WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)");
         return $stmt->fetchColumn();
     }
 
-    // Получить последние N курсов (по дате добавления) -----------------------------------------------------
-    public function getLatest($limit = 5)
-    {
-        $sql = "SELECT c.*, cat.name AS category FROM courses c JOIN categories cat ON c.category_id = cat.id ORDER BY c.created_at DESC LIMIT ?";
-        $stmt = $this->getConnection()->prepare($sql);
-        $stmt->bindValue(1, $limit, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+
 
     // Получить курсы с самым высоким рейтингом (пример) -----------------------------------------------------
     public function getTopRated($limit = 3)

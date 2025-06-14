@@ -1,9 +1,8 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/../../config/app.php'; // Include the central config file
 require_once __DIR__ . '/../../Classes/Auth.php';
 require_once __DIR__ . '/../../Classes/Course.php';
+require_once __DIR__ . '/../../Classes/SessionMessage.php'; // Add this line
 
 $auth = new Auth();
 Auth::requireAdmin(); // Ensure admin access
@@ -24,18 +23,18 @@ require_once __DIR__ . '/../partials/header.php';
             <div class="position-sticky pt-3">
                 <ul class="nav flex-column">
                 <li class="nav-item">
-                        <a class="nav-link" href="/Shaposhnikov_project/templates/admin/admin_dashboard.php">
+                        <a class="nav-link" href="<?= BASE_PATH ?>/templates/admin/admin_dashboard.php">
                             <i class="fas fa-tachometer-alt me-2"></i>
                             Dashboard
                         </a>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="/Shaposhnikov_project/templates/admin/admin_users.php">
+                        <a class="nav-link text-white" href="<?= BASE_PATH ?>/templates/admin/admin_users.php">
                             <i class="fas fa-users me-2"></i>
                             Users
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active text-white" href="/Shaposhnikov_project/templates/admin/admin_courses.php">
+                        <a class="nav-link active text-white" href="<?= BASE_PATH ?>/templates/admin/admin_courses.php">
                             <i class="fas fa-book me-2"></i>
                             Courses
                         </a>
@@ -53,16 +52,15 @@ require_once __DIR__ . '/../partials/header.php';
                 </button>
             </div>
 
-            <?php if (isset($_SESSION['message'])): ?>
-                <div class="alert alert-<?php echo $_SESSION['message_type']; ?> alert-dismissible fade show" role="alert">
-                    <?php 
-                    echo $_SESSION['message'];
-                    unset($_SESSION['message']);
-                    unset($_SESSION['message_type']);
-                    ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            <?php endif; ?>
+            <?php
+            if (SessionMessage::hasMessages()) {
+                $message = SessionMessage::get();
+                echo '<div class="alert alert-' . htmlspecialchars($message['type']) . ' alert-dismissible fade show" role="alert">';
+                echo htmlspecialchars($message['message']);
+                echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+                echo '</div>';
+            }
+            ?>
 
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                 <?php foreach ($courses as $course): ?>
@@ -99,6 +97,6 @@ require_once __DIR__ . '/../partials/header.php';
 <?php require_once __DIR__ . '/../modals/edit_course.php'; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/Shaposhnikov_project/assets/js/admin_courses.js"></script>
+<script src="<?= BASE_PATH ?>/assets/js/admin_courses.js"></script>
 
 <?php require_once __DIR__ . '/../partials/footer.php'; ?> 

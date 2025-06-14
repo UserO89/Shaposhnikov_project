@@ -3,6 +3,7 @@ session_start();
 require_once __DIR__ . '/../../Classes/Auth.php';
 require_once __DIR__ . '/../../Classes/User.php';
 require_once __DIR__ . '/../../Classes/Validator.php';
+require_once __DIR__ . '/../../Classes/SessionMessage.php';
 
 // Check if user is admin
 Auth::requireAdmin();
@@ -22,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Validate data
         $validator = new Validator();
         if (!$validator->validateUserData($userData)) {
-            $_SESSION['errors'] = $validator->getErrors();
+            SessionMessage::set('danger', $validator->getFirstError());
             header('Location: /Shaposhnikov_project/templates/admin/admin_users.php');
             exit();
         }
@@ -32,15 +33,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $userId = $user->create($userData);
 
         if ($userId) {
-            $_SESSION['success'] = 'User added successfully';
+            SessionMessage::set('success', 'User added successfully');
         } else {
             throw new Exception('Failed to create user');
         }
     } catch (Exception $e) {
-        $_SESSION['errors'] = ['Error: ' . $e->getMessage()];
+        SessionMessage::set('danger', 'Error: ' . $e->getMessage());
     }
 } else {
-    $_SESSION['errors'] = ['Invalid request method'];
+    SessionMessage::set('danger', 'Invalid request method');
 }
 
 // Go back to users page

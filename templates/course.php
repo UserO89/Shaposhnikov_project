@@ -4,6 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once __DIR__ . '/../Classes/Auth.php';
 require_once __DIR__ . '/../Classes/Database.php';
+require_once __DIR__ . '/../Classes/SessionMessage.php';
 
 // Get course ID from URL
 $courseId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
@@ -54,6 +55,16 @@ try {
 <?php include 'partials/header.php'; ?>
 
     <main class="container my-5">
+        <?php
+        if (SessionMessage::hasMessages()) {
+            $message = SessionMessage::get();
+            echo '<div class="alert alert-' . htmlspecialchars($message['type']) . ' alert-dismissible fade show" role="alert">';
+            echo htmlspecialchars($message['message']);
+            echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+            echo '</div>';
+        }
+        ?>
+
         <?php if ($course): ?>
             <div class="row">
                 <div class="col-md-8">
@@ -88,7 +99,10 @@ try {
                                         <a href="#" class="btn btn-success w-100 disabled">Enrolled <i class="fas fa-check"></i></a>
                                         <button type="button" class="btn btn-primary w-100 mt-2">Continue Learning</button>
                                     <?php else: ?>
-                                        <button type="button" class="btn btn-primary w-100" id="enrollButton" data-course-id="<?= htmlspecialchars($courseId) ?>">Enroll Now</button>
+                                        <form action="/Shaposhnikov_project/actions/user/EnrollCourse.php" method="POST">
+                                            <input type="hidden" name="course_id" value="<?= htmlspecialchars($courseId) ?>">
+                                            <button type="submit" class="btn btn-primary w-100">Enroll Now</button>
+                                        </form>
                                     <?php endif; ?>
                                 <?php else: ?>
                                     <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#loginModal">Login to Enroll</button>
@@ -136,6 +150,5 @@ try {
     <?php include 'partials/footer.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/Shaposhnikov_project/assets/js/course_details.js"></script>
 </body>
 </html>

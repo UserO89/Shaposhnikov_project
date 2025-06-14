@@ -4,14 +4,6 @@ require_once __DIR__ . '/Validator.php';
 
 class User extends Database
 {
-    private $id;
-    private $username;
-    private $first_name;
-    private $last_name;
-    private $email;
-    private $role;
-    private $password;
-    private $created_at;
     private $validator;
 
     public function __construct()
@@ -144,22 +136,6 @@ class User extends Database
         } catch (Exception $e) {
             throw new Exception('Error deleting user: ' . $e->getMessage());
         }
-    }
-
-    // Поиск пользователей
-    public function search($query)
-    {
-        $search = "%$query%";
-        $sql = "SELECT * FROM users 
-                WHERE username LIKE ? 
-                OR first_name LIKE ? 
-                OR last_name LIKE ? 
-                OR email LIKE ? 
-                ORDER BY created_at DESC";
-        
-        $stmt = $this->getConnection()->prepare($sql);
-        $stmt->execute([$search, $search, $search, $search]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // Получить количество пользователей

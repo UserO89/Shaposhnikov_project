@@ -1,25 +1,24 @@
 <?php
-session_start();
+require_once __DIR__ . '/../../config/app.php';
 require_once __DIR__ . '/../../Classes/Auth.php';
-require_once __DIR__ . '/../../Classes/Database.php';
+require_once __DIR__ . '/../../Classes/User.php';
+require_once __DIR__ . '/../../Classes/SessionMessage.php';
 
-// Check if user is admin
 $auth = new Auth();
-if (!$auth->isAdmin()) {
-    header('Location: /Shaposhnikov_project/templates/admin/admin_users.php');
-    exit();
+Auth::requireAdmin();
+
+if (isset($_GET['id'])) {
+    $user_id = $_GET['id'];
+
+    $user = new User();
+    if ($user->delete($user_id)) {
+        SessionMessage::set('success', 'User deleted successfully.');
+    } else {
+        SessionMessage::set('danger', 'Failed to delete user or user not found.');
+    }
+} else {
+    SessionMessage::set('danger', 'User ID not provided.');
 }
 
-// Get user id from form
-$user_id = $_POST['user_id'];
-
-// Connect to database
-$db = new Database();
-$conn = $db->getConnection();
-
-// Delete user
-$sql = "DELETE FROM users WHERE id = $user_id";
-$conn->query($sql);
-
-header('Location: /Shaposhnikov_project/templates/admin/admin_users.php');
+header('Location: ' . BASE_PATH . '/templates/admin/admin_users.php');
 exit(); 

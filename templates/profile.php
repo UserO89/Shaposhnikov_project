@@ -4,6 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once __DIR__ . '/../Classes/Auth.php';
 require_once __DIR__ . '/../Classes/Database.php';
+require_once __DIR__ . '/../Classes/SessionMessage.php';
 require_once __DIR__ . '/partials/header.php';
 
 $auth = new Auth();
@@ -29,6 +30,15 @@ $activeCourses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <link rel="stylesheet" href="/Shaposhnikov_project/assets/css/profile.css">
 
 <main class="container-fluid py-4">
+    <?php
+    if (SessionMessage::hasMessages()) {
+        $message = SessionMessage::get();
+        echo '<div class="alert alert-' . htmlspecialchars($message['type']) . ' alert-dismissible fade show" role="alert">';
+        echo htmlspecialchars($message['message']);
+        echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+        echo '</div>';
+    }
+    ?>
     <div class="row">
 
         <div class="col-md-4">

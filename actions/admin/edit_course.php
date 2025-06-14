@@ -16,6 +16,7 @@ if (!isset($base_path)) {
 require_once __DIR__ . '/../../Classes/Auth.php';
 require_once __DIR__ . '/../../Classes/Course.php'; // Убедимся, что класс Course доступен
 require_once __DIR__ . '/../../Classes/Validator.php'; // Подключаем класс Validator
+require_once __DIR__ . '/../../Classes/SessionMessage.php'; // Add this line
 
 // Проверка прав администратора
 Auth::requireAdmin();
@@ -30,10 +31,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data = [
             'title' => trim($_POST['title'] ?? ''),
             'description' => trim($_POST['description'] ?? ''),
-            'category' => trim($_POST['category'] ?? ''), // Добавляем категорию
+            'category' => trim($_POST['category'] ?? ''),
             'duration' => trim($_POST['duration'] ?? ''),
             'price' => filter_var($_POST['price'] ?? 0, FILTER_VALIDATE_FLOAT),
-            'image' => trim($_POST['image_url'] ?? '') // Используем 'image' как ожидается в Course::update
+            'image' => trim($_POST['image_url'] ?? '')
         ];
 
         if (!$id) {
@@ -44,12 +45,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Метод update() в классе Course уже содержит вызов validateCourseData()
         $course->update($id, $data);
 
-        $_SESSION['message'] = 'The course data is changed succesfully!';
-        $_SESSION['message_type'] = 'success';
+        SessionMessage::set('success', 'The course data is changed successfully!');
 
     } catch (Exception $e) {
-        $_SESSION['message'] =$e->getMessage();
-        $_SESSION['message_type'] = 'danger';
+        SessionMessage::set('danger', $e->getMessage());
         error_log("Error updating course: " . $e->getMessage());
     }
 

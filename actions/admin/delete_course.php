@@ -10,6 +10,7 @@ if (!isset($base_path)) {
 
 require_once __DIR__ . '/../../Classes/Auth.php';
 require_once __DIR__ . '/../../Classes/Course.php'; // Подключаем класс Course
+require_once __DIR__ . '/../../Classes/SessionMessage.php'; // Add this line
 
 // Проверка прав администратора
 Auth::requireAdmin();
@@ -22,7 +23,7 @@ if (isset($_GET['id'])) { // Изменено на проверку GET-пара
         $courseId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
         if (!$courseId) {
-            $_SESSION['errors'][] = 'Wrong course ID';
+            SessionMessage::set('danger', 'Wrong course ID');
             header('Location: ' . $base_path . '/templates/admin/admin_courses.php');
             exit();
         }
@@ -30,14 +31,13 @@ if (isset($_GET['id'])) { // Изменено на проверку GET-пара
         $deleted = $course->delete($courseId);
 
         if ($deleted) {
-            $_SESSION['message'] = 'Course deleted succesfully.';
-            $_SESSION['message_type'] = 'success';
+            SessionMessage::set('success', 'Course deleted successfully.');
         } else {
-            $_SESSION['errors'][] = 'Course not found';
+            SessionMessage::set('danger', 'Course not found or could not be deleted.');
         }
 
     } catch (PDOException $e) {
-        $_SESSION['errors'][] = 'DB error: ' . $e->getMessage();
+        SessionMessage::set('danger', 'DB error: ' . $e->getMessage());
         error_log("Database error deleting course: " . $e->getMessage());
     }
 
@@ -45,6 +45,7 @@ if (isset($_GET['id'])) { // Изменено на проверку GET-пара
     exit();
 } else {
     // Если запрос не POST, перенаправляем на страницу курсов
+    SessionMessage::set('danger', 'Invalid request method for course deletion.');
     header('Location: ' . $base_path . '/templates/admin/admin_courses.php');
     exit();
 }

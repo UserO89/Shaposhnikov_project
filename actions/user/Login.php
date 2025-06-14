@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../Classes/Auth.php';
+require_once __DIR__ . '/../../Classes/SessionMessage.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Получаем данные из формы
@@ -14,11 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($result) {
         // Успешный вход
+        SessionMessage::set('success', 'Welcome! You have been successfully logged in.');
         header('Location: /Shaposhnikov_project/index.php');
         exit();
     } else {
         // Неудачный вход
-        header('Location: /Shaposhnikov_project/templates/NotFound.php');
+        SessionMessage::set('danger', 'Invalid username or password.');
+        header('Location: /Shaposhnikov_project/index.php');
         exit();
     }
 } else {
