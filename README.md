@@ -11,7 +11,7 @@ Developed by **Vladislav Shaposhnikov**.
 - **Personal Profile Page:** Each user has a customizable profile.
 - **Course Catalog:** Browse, search, and view detailed information about available courses.
 - **Course Reviews:** Courses display reviews, stored in the database.
-- **Admin Panel:** Admins can create, edit, delete, and manage all courses.
+- **Admin Panel:** Admins can create, edit, delete, and manage all courses and users.
 - **Modern UI:** Responsive design with Bootstrap (CSS/JS assets included).
 - **Modular Codebase:** Clean structure using OOP (PHP Classes), separated templates, and actions.
 
@@ -20,11 +20,11 @@ Developed by **Vladislav Shaposhnikov**.
 ## 📁 Project Structure
 Shaposhnikov_project-main/ <br>
 │<br>
-├── Classes/ # Core PHP classes: User, Course, Auth, DB, Validator<br>
+├── Classes/ # Core PHP classes: User, Course, Auth, DB, Validator, SessionMessage<br>
 ├── actions/ # Business logic for admin and user actions<br>
-├── assets/ # Static files: CSS, JavaScript, images<br>
-├── config/ # Configuration files (DB connection, app config)<br>
-├── templates/ # Page templates (Home, Profile, Courses, Admin, Partials)<br>
+├── assets/ # Static files: CSS, JavaScript, images + database dump<br>
+├── config/ # Configuration files (DB connection info, app config)<br>
+├── templates/ # Page templates (Home, Profile, Courses, Admin, Partials, their modals)<br>
 └── index.php # Main entry point; redirects to profile or home<br>
 
 ---
