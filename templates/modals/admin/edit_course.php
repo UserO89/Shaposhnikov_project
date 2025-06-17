@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="editCourseForm" action="<?= BASE_PATH ?>/actions/admin/edit_course.php" method="POST">
+                <form id="editCourseForm" action="<?= BASE_PATH ?>/actions/admin/courses/edit.php" method="POST">
                     <input type="hidden" id="edit_course_id" name="id">
                     <div class="mb-3">
                         <label for="edit_title" class="form-label">Title</label>

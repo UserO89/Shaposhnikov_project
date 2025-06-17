@@ -1,10 +1,9 @@
 <?php
-require_once __DIR__ . '/../../config/app.php'; // Include the central config file
-
+require_once __DIR__ . '/../../config/app.php'; 
 require_once __DIR__ . '/../../Classes/Auth.php';
 require_once __DIR__ . '/../../Classes/User.php';
 require_once __DIR__ . '/../../Classes/Course.php';
-require_once __DIR__ . '/../../Classes/SessionMessage.php'; // Add this line
+require_once __DIR__ . '/../../Classes/SessionMessage.php';
 
 $auth = new Auth();
 Auth::requireAdmin();
@@ -16,9 +15,10 @@ $totalUsers = $user->getCount();
 $totalCourses = $course->getCount();
 $usersLast30Days = $user->getUsersCountLast30Days();
 $coursesLast30Days = $course->getCoursesCountLast30Days();
-$recentUsers = $user->getRecentUsers(5); // Get last 5 registered users
+$recentUsers = $user->getRecentUsers(5); 
 
 require_once __DIR__ . '/../partials/header.php';
+require_once __DIR__ . '/../partials/renders.php';
 ?>
 
 <div class="container-fluid">
@@ -55,53 +55,15 @@ require_once __DIR__ . '/../partials/header.php';
                 <h1 class="h2">Admin Dashboard</h1>
             </div>
 
-            <?php
-            if (SessionMessage::hasMessages()) {
-                $message = SessionMessage::get();
-                echo '<div class="alert alert-' . htmlspecialchars($message['type']) . ' alert-dismissible fade show" role="alert">';
-                echo htmlspecialchars($message['message']);
-                echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-                echo '</div>';
-            }
-            ?>
+            <?php renderFlashMessage();  ?>
 
             <div class="row">
-                <div class="col-md-6 col-lg-3 mb-4">
-                    <div class="card text-center bg-primary text-white h-100 d-flex flex-column justify-content-center">
-                        <div class="card-body">
-                            <i class="fas fa-users fa-3x mb-3"></i>
-                            <h3 class="card-title display-4 fw-bold"><?php echo $totalUsers; ?></h3>
-                            <p class="card-text fs-5">Total Users</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 mb-4">
-                    <div class="card text-center bg-success text-white h-100 d-flex flex-column justify-content-center">
-                        <div class="card-body">
-                            <i class="fas fa-book fa-3x mb-3"></i>
-                            <h3 class="card-title display-4 fw-bold"><?php echo $totalCourses; ?></h3>
-                            <p class="card-text fs-5">Total Courses</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 mb-4">
-                    <div class="card text-center bg-info text-white h-100 d-flex flex-column justify-content-center">
-                        <div class="card-body">
-                            <i class="fas fa-user-plus fa-3x mb-3"></i>
-                            <h3 class="card-title display-4 fw-bold"><?php echo $usersLast30Days; ?></h3>
-                            <p class="card-text fs-5">New Users (30 Days)</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 mb-4">
-                    <div class="card text-center bg-warning text-white h-100 d-flex flex-column justify-content-center">
-                        <div class="card-body">
-                            <i class="fas fa-book-medical fa-3x mb-3"></i>
-                            <h3 class="card-title display-4 fw-bold"><?php echo $coursesLast30Days; ?></h3>
-                            <p class="card-text fs-5">New Courses (30 Days)</p>
-                        </div>
-                    </div>
-                </div>
+                <?php
+                renderStatCard('fa-users', $totalUsers, 'Total Users', 'bg-primary');
+                renderStatCard('fa-book', $totalCourses, 'Total Courses', 'bg-success');
+                renderStatCard('fa-user-plus', $usersLast30Days, 'New Users (30 Days)', 'bg-info');
+                renderStatCard('fa-book-medical', $coursesLast30Days, 'New Courses (30 Days)', 'bg-warning');
+                ?>
             </div>
 
             <div class="row">
@@ -115,8 +77,8 @@ require_once __DIR__ . '/../partials/header.php';
                                 <ul class="list-group list-group-flush">
                                     <?php foreach ($recentUsers as $recentUser): ?>
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            <?php echo htmlspecialchars($recentUser['username']); ?>
-                                            <span class="badge bg-secondary rounded-pill"><?php echo date('M d, Y', strtotime($recentUser['created_at'])); ?></span>
+                                            <?= htmlspecialchars($recentUser['username']); ?>
+                                            <span class="badge bg-secondary rounded-pill"><?= date('M d, Y', strtotime($recentUser['created_at'])); ?></span>
                                         </li>
                                     <?php endforeach; ?>
                                 </ul>
@@ -154,8 +116,6 @@ require_once __DIR__ . '/../partials/header.php';
         </main>
     </div>
 </div>
-<?php require_once __DIR__ . '/../modals/add_user.php'; ?>
-<?php require_once __DIR__ . '/../modals/add_course.php'; ?>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<?php require_once __DIR__ . '/../modals/admin/add_user.php'; ?>
+<?php require_once __DIR__ . '/../modals/admin/add_course.php'; ?>
 <?php require_once __DIR__ . '/../partials/footer.php'; ?> 

@@ -52,51 +52,20 @@ require_once __DIR__ . '/../partials/header.php';
                 </button>
             </div>
 
-            <?php
-            if (SessionMessage::hasMessages()) {
-                $message = SessionMessage::get();
-                echo '<div class="alert alert-' . htmlspecialchars($message['type']) . ' alert-dismissible fade show" role="alert">';
-                echo htmlspecialchars($message['message']);
-                echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-                echo '</div>';
-            }
-            ?>
+            <?php renderFlashMessage();?>
 
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                 <?php foreach ($courses as $course): ?>
-                <div class="col">
-                    <div class="card h-100">
-                        <img src="<?php echo htmlspecialchars($course['image_url']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($course['title']); ?>">
-                        <div class="card-body">
-                            <h5 class="card-title"><?php echo htmlspecialchars($course['title']); ?></h5>
-                            <p class="card-text"><?php echo htmlspecialchars($course['description']); ?></p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="badge bg-primary"><?php echo htmlspecialchars($course['category'] ?? 'N/A'); ?></span>
-                                <div class="btn-group">
-                                    <button class="btn btn-sm btn-primary" onclick="editCourse(<?php echo htmlspecialchars(json_encode($course)); ?>)">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger" onclick="deleteCourse(<?php echo $course['id']; ?>)">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    <?php include __DIR__ . '/../partials/course_card.php'; ?>
                 <?php endforeach; ?>
             </div>
         </main>
     </div>
 </div>
 
-<!-- Add Course Modal -->
-<?php require_once __DIR__ . '/../modals/add_course.php'; ?>
+<?php require_once __DIR__ . '/../modals/admin/add_course.php'; ?>
+<?php require_once __DIR__ . '/../modals/admin/edit_course.php'; ?>
 
-<!-- Edit Course Modal -->
-<?php require_once __DIR__ . '/../modals/edit_course.php'; ?>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= BASE_PATH ?>/assets/js/admin_courses.js"></script>
 
 <?php require_once __DIR__ . '/../partials/footer.php'; ?> 

@@ -53,15 +53,7 @@ require_once __DIR__ . '/../partials/header.php';
                 </button>
             </div>
 
-            <?php
-            if (SessionMessage::hasMessages()) {
-                $message = SessionMessage::get();
-                echo '<div class="alert alert-' . htmlspecialchars($message['type']) . ' alert-dismissible fade show" role="alert">';
-                echo htmlspecialchars($message['message']);
-                echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-                echo '</div>';
-            }
-            ?>
+            <?php renderFlashMessage() ?>
 
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
@@ -79,21 +71,21 @@ require_once __DIR__ . '/../partials/header.php';
                     <tbody>
                         <?php foreach ($users as $user): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($user['id']); ?></td>
-                            <td><?php echo htmlspecialchars($user['username']); ?></td>
-                            <td><?php echo htmlspecialchars($user['first_name']); ?></td>
-                            <td><?php echo htmlspecialchars($user['last_name']); ?></td>
-                            <td><?php echo htmlspecialchars($user['email']); ?></td>
+                            <td><?= htmlspecialchars($user['id']); ?></td>
+                            <td><?= htmlspecialchars($user['username']); ?></td>
+                            <td><?= htmlspecialchars($user['first_name']); ?></td>
+                            <td><?= htmlspecialchars($user['last_name']); ?></td>
+                            <td><?= htmlspecialchars($user['email']); ?></td>
                             <td>
                                 <span class="badge bg-<?php echo $user['role'] === 'admin' ? 'danger' : 'primary'; ?>">
-                                    <?php echo htmlspecialchars($user['role']); ?>
+                                    <?= htmlspecialchars($user['role']); ?>
                                 </span>
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-primary" onclick="editUser(<?php echo htmlspecialchars(json_encode($user)); ?>)">
+                                <button class="btn btn-sm btn-primary" onclick="editUser(<?= htmlspecialchars(json_encode($user)); ?>)">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteUser(<?php echo $user['id']; ?>)">
+                                <button class="btn btn-sm btn-danger" onclick="deleteUser(<?= $user['id']; ?>)">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
@@ -105,14 +97,7 @@ require_once __DIR__ . '/../partials/header.php';
         </main>
     </div>
 </div>
-
-<!-- Add User Modal -->
-<?php require_once __DIR__ . '/../modals/add_user.php'; ?>
-
-<!-- Edit User Modal -->
-<?php require_once __DIR__ . '/../modals/edit_user.php'; ?>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= BASE_PATH ?>/assets/js/admin_users.js"></script>
-
+<?php require_once __DIR__ . '/../modals/admin/add_user.php'; ?>
+<?php require_once __DIR__ . '/../modals/admin/edit_user.php'; ?>
 <?php require_once __DIR__ . '/../partials/footer.php'; ?> 

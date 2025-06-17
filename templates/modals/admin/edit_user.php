@@ -5,7 +5,7 @@
                 <h5 class="modal-title">Edit User</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="/Shaposhnikov_project/actions/admin/edit_user.php" method="POST">
+            <form action="/Shaposhnikov_project/actions/admin/users/edit.php" method="POST">
                 <input type="hidden" id="edit_user_id" name="user_id">
                 <div class="modal-body">
                     <div class="mb-3">

@@ -1,75 +1,72 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-require_once __DIR__ . '/../Classes/Auth.php';
-require_once __DIR__ . '/../Classes/Database.php';
-require_once __DIR__ . '/../Classes/SessionMessage.php';
 require_once __DIR__ . '/partials/header.php';
+require_once __DIR__ . '/../Classes/Auth.php';
+require_once __DIR__ . '/../Classes/Course.php'; 
 
-$auth = new Auth();
-$user = $auth->getUser();
+$user = null;
+$activeCourses = [];
+$errorMessage = null;
 
-if (!$user) {
-    header('Location: /Shaposhnikov_project/templates/home.php');
-    exit();
+try {
+    $auth = new Auth();
+    $user = $auth->getUser();
+
+    if (!$user) {
+        header('Location: ' . BASE_PATH . '/templates/home.php');
+        exit();
+    }
+
+    $courseObj = new Course(); 
+    $activeCourses = $courseObj->getActiveCoursesByUserId($user['id']); 
+
+} catch (Exception $e) {
+    error_log("Error loading profile page: " . $e->getMessage());
+    $errorMessage = "An error occurred while loading your profile. Please try again later.";
 }
-
-// Получение активных курсов пользователя
-$db = new Database();
-$conn = $db->getConnection();
-$stmt = $conn->prepare("SELECT uc.progress, c.title, c.description, c.image_url 
-                       FROM user_courses uc
-                       JOIN courses c ON uc.course_id = c.id
-                       WHERE uc.user_id = ? AND uc.is_completed = FALSE");
-$stmt->execute([$user['id']]);
-$activeCourses = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 ?>
 
-<link rel="stylesheet" href="/Shaposhnikov_project/assets/css/profile.css">
-
 <main class="container-fluid py-4">
-    <?php
-    if (SessionMessage::hasMessages()) {
-        $message = SessionMessage::get();
-        echo '<div class="alert alert-' . htmlspecialchars($message['type']) . ' alert-dismissible fade show" role="alert">';
-        echo htmlspecialchars($message['message']);
-        echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-        echo '</div>';
-    }
-    ?>
-    <div class="row">
+    <?php renderFlashMessage();?>
+    <h1 class="display-4 mb-4">My Profile</h1>
+    
+    <?php 
+    // Отображение сообщения об ошибке, если есть
+    if ($errorMessage): ?>
+        <div class="alert alert-danger" role="alert">
+            <?= htmlspecialchars($errorMessage) ?>
+        </div>
+    <?php endif; ?>
 
-        <div class="col-md-4">
+    <div class="row">
+        <aside class="col-md-4">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Profile Information</h4>
+                    <h2 class="mb-0">Profile Information</h2>
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-4">
-                        <h3><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?></h3>
-                        <span class="badge bg-<?php echo $user['role'] === 'admin' ? 'danger' : 'primary'; ?>"><?php echo ucfirst(htmlspecialchars($user['role'])); ?></span>
+                        <h3><?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?></h3>
+                        <span class="badge bg-<?= ($user['role'] === 'admin') ? 'danger' : 'primary' ?>"><?= ucfirst(htmlspecialchars($user['role'])) ?></span>
                     </div>
                     
                     <div class="mb-3">
                         <label class="form-label text-muted">Username</label>
-                        <p class="form-control-plaintext"><?php echo htmlspecialchars($user['username']); ?></p>
+                        <p class="form-control-plaintext"><?= htmlspecialchars($user['username']) ?></p>
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-muted">Email</label>
-                        <p class="form-control-plaintext"><?php echo htmlspecialchars($user['email']); ?></p>
+                        <p class="form-control-plaintext"><?= htmlspecialchars($user['email']) ?></p>
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-muted">Member Since</label>
-                        <p class="form-control-plaintext"><?php echo date('F d, Y', strtotime($user['created_at'])); ?></p>
+                        <p class="form-control-plaintext"><?= date('F d, Y', strtotime($user['created_at'])) ?></p>
                     </div>
                     
                     <div class="d-grid gap-2">
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                             <i class="fas fa-edit me-2"></i>Edit Profile
                         </button>
-                        <form action="/Shaposhnikov_project/actions/user/Logout.php" method="post">
+                        <form action="<?= BASE_PATH ?>/actions/auth/Logout.php" method="post">
                             <button type="submit" class="btn btn-outline-danger w-100">
                                 <i class="fas fa-sign-out-alt me-2"></i>Logout
                             </button>
@@ -77,13 +74,13 @@ $activeCourses = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                 </div>
             </div>
-        </div>
+        </aside>
 
-        <div class="col-md-8">
+        <section class="col-md-8">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">My Courses</h4>
-                    <a href="/Shaposhnikov_project/templates/courses.php" class="btn btn-light btn-sm">
+                    <h2 class="mb-0">My Courses</h2>
+                    <a href="<?= BASE_PATH ?>/templates/courses.php" class="btn btn-light btn-sm">
                         <i class="fas fa-plus me-2"></i>Browse Courses
                     </a>
                 </div>
@@ -94,12 +91,12 @@ $activeCourses = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php foreach ($activeCourses as $course): ?>
                         <div class="col-md-6">
                             <div class="card h-100">
-                                <img src="<?php echo htmlspecialchars($course['image_url'] ?: '/Shaposhnikov_project/assets/img/course-placeholder.jpg'); ?>" class="card-img-top" alt="Course Image">
+                                <img src="<?= htmlspecialchars($course['image_url'] ?: BASE_PATH . '/assets/img/course-placeholder.jpg') ?>" class="card-img-top" alt="Course Image">
                                 <div class="card-body">
-                                    <h5 class="card-title"><?php echo htmlspecialchars($course['title']); ?></h5>
-                                    <p class="card-text"><?php echo htmlspecialchars($course['description']); ?></p>
+                                    <h5 class="card-title"><?= htmlspecialchars($course['title']) ?></h5>
+                                    <p class="card-text"><?= htmlspecialchars($course['description']) ?></p>
                                     <div class="progress mb-3">
-                                        <div class="progress-bar" role="progressbar" style="width: <?php echo htmlspecialchars($course['progress']); ?>%" aria-valuenow="<?php echo htmlspecialchars($course['progress']); ?>" aria-valuemin="0" aria-valuemax="100"><?php echo htmlspecialchars($course['progress']); ?>% Complete</div>
+                                        <div class="progress-bar" role="progressbar" style="width: <?= htmlspecialchars((string)$course['progress']) ?>%" aria-valuenow="<?= htmlspecialchars((string)$course['progress']) ?>" aria-valuemin="0" aria-valuemax="100"><?= htmlspecialchars((string)$course['progress']) ?>% Complete</div>
                                     </div>
                                     <a href="#" class="btn btn-primary">Continue Learning</a>
                                 </div>
@@ -108,21 +105,20 @@ $activeCourses = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php endforeach; ?>
                     </div>
                     <?php else: ?>
-                    <!-- Если нет активных курсов -->
                     <div class="text-center py-5">
                         <i class="fas fa-graduation-cap fa-3x text-muted mb-3"></i>
                         <h5>No Active Courses</h5>
                         <p class="text-muted">Start your learning journey by enrolling in a course!</p>
-                        <a href="/Shaposhnikov_project/templates/courses.php" class="btn btn-primary">
+                        <a href="<?= BASE_PATH ?>/templates/courses.php" class="btn btn-primary">
                             Browse Available Courses
                         </a>
                     </div>
                     <?php endif; ?>
                 </div>
             </div>
-        </div>
+        </section>
     </div>
 </main>
 
-<?php include_once __DIR__ . '/modals/edit_modal.php'; ?>
+<?php include_once __DIR__ . '/modals/auth/edit.php'; ?>
 <?php require_once __DIR__ . '/partials/footer.php';?> 

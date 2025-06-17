@@ -13,10 +13,10 @@ if (!isset($base_path)) {
     $base_path = '/Shaposhnikov_project'; 
 }
 
-require_once __DIR__ . '/../../Classes/Auth.php';
-require_once __DIR__ . '/../../Classes/Course.php'; // Убедимся, что класс Course доступен
-require_once __DIR__ . '/../../Classes/Validator.php'; // Подключаем класс Validator
-require_once __DIR__ . '/../../Classes/SessionMessage.php'; // Add this line
+require_once __DIR__ . '/../../../Classes/Auth.php';
+require_once __DIR__ . '/../../../Classes/Course.php'; // Убедимся, что класс Course доступен
+require_once __DIR__ . '/../../../Classes/Validator.php'; // Подключаем класс Validator
+require_once __DIR__ . '/../../../Classes/SessionMessage.php'; // Add this line
 
 // Проверка прав администратора
 Auth::requireAdmin();

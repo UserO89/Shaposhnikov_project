@@ -285,4 +285,36 @@ class Course extends Database
         $stmt = $this->getConnection()->query("SELECT * FROM categories ORDER BY name ASC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    // Получить отзывы по курсу
+    public function getReviews($courseId)
+    {
+        $stmt = $this->getConnection()->prepare('
+            SELECT r.*, u.first_name, u.last_name
+            FROM reviews r
+            JOIN users u ON r.user_id = u.id
+            WHERE r.course_id = ?
+            ORDER BY r.created_at DESC
+        ');
+        $stmt->execute([$courseId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Проверить, записан ли пользователь на курс
+    public function getActiveCoursesByUserId(int $userId): array
+    {
+        try {
+            $stmt = $this->getConnection()->prepare("
+                SELECT uc.progress, c.title, c.description, c.image_url 
+                FROM user_courses uc
+                JOIN courses c ON uc.course_id = c.id
+                WHERE uc.user_id = ? AND uc.is_completed = FALSE
+            ");
+            $stmt->execute([$userId]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error fetching active courses for user ID " . $userId . ": " . $e->getMessage());
+            return [];
+        }
+    }
 }

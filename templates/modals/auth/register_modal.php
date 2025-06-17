@@ -6,7 +6,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <form action="<?= BASE_PATH ?>/actions/user/Register.php" method="POST">
+        <form action="<?= BASE_PATH ?>/actions/auth/Register.php" method="POST">
           <div class="mb-3">
             <label for="username" class="form-label">Username</label>
             <input type="text" class="form-control" id="username" name="username" required>

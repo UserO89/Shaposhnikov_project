@@ -5,7 +5,7 @@
                 <h5 class="modal-title">Add New User</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="/Shaposhnikov_project/actions/admin/add_user.php" method="POST">
+            <form action="/Shaposhnikov_project/actions/admin/users/add.php" method="POST">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="register_username" class="form-label">Username</label>

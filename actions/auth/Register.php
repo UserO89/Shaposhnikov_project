@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $userData = [
             'username' => trim($_POST['username']),
             'email' => trim($_POST['email']),
-            'password' => $_POST['password'],
+            'password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
             'first_name' => trim($_POST['first_name']),
             'last_name' => trim($_POST['last_name']),
             'role' => 'student'

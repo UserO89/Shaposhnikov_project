@@ -1,76 +1,34 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+include_once 'partials/header.php';
 require_once __DIR__ . '/../Classes/Auth.php';
-require_once __DIR__ . '/../Classes/Database.php';
-require_once __DIR__ . '/../Classes/SessionMessage.php';
+require_once __DIR__ . '/../Classes/Course.php';
+require_once __DIR__ . '/../Classes/User.php';
 
-// Get course ID from URL
 $courseId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-$course = null;
-$reviews = [];
-$isEnrolled = false;
-$enrollmentId = null;
-
 $auth = new Auth();
-$user = $auth->getUser(); // Get current user data
+$user = $auth->getUser();
 
-try {
-    $db = new Database();
-    $conn = $db->getConnection();
-    $stmt = $conn->prepare("SELECT * FROM courses WHERE id = ?");
-    $stmt->execute([$courseId]);
-    $course = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($course && $user) {
-        // Check if user is already enrolled in this course
-        $stmtEnrollment = $conn->prepare("SELECT id FROM user_courses WHERE user_id = ? AND course_id = ?");
-        $stmtEnrollment->execute([$user['id'], $courseId]);
-        $existingEnrollment = $stmtEnrollment->fetch(PDO::FETCH_ASSOC);
-        if ($existingEnrollment) {
-            $isEnrolled = true;
-            $enrollmentId = $existingEnrollment['id'];
-        }
-    }
-
-    // Fetch reviews for the course
-    if ($course) {
-        $stmtReviews = $conn->prepare("
-            SELECT r.*, u.first_name, u.last_name
-            FROM reviews r
-            JOIN users u ON r.user_id = u.id
-            WHERE r.course_id = ?
-            ORDER BY r.created_at DESC
-        ");
-        $stmtReviews->execute([$courseId]);
-        $reviews = $stmtReviews->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-} catch (PDOException $e) {
-    error_log("Database error in course.php: " . $e->getMessage());
-}
+$courseObj = new Course();
+$userObj = new User();
+$course = $courseObj->getById($courseId);
+$reviews = $courseObj->getReviews($courseId);
+$isEnrolled = $user ? $userObj->isUserEnrolled($user['id'], $courseId) : false;
 ?>
-<?php include 'partials/header.php'; ?>
 
     <main class="container my-5">
-        <?php
-        if (SessionMessage::hasMessages()) {
-            $message = SessionMessage::get();
-            echo '<div class="alert alert-' . htmlspecialchars($message['type']) . ' alert-dismissible fade show" role="alert">';
-            echo htmlspecialchars($message['message']);
-            echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-            echo '</div>';
-        }
-        ?>
-
+        <section class="hero text-center text-light d-flex align-items-center justify-content-center">
+            <div>
+                <?php renderFlashMessage() ?>
+                <h1 class="display-4">Course: <?= htmlspecialchars($course['title']) ?></h1>
+            </div>
+        </section>
         <?php if ($course): ?>
             <div class="row">
                 <div class="col-md-8">
                     <h1 class="mb-4"><?= htmlspecialchars($course['title']) ?></h1>
                     <div class="card mb-4">
-                        <img src="<?= htmlspecialchars($course['image_url'] ?? 'https://via.placeholder.com/800x400') ?>" 
+                        <img src="<?= htmlspecialchars($course['image_url'] ?: BASE_PATH . '/assets/img/placeholder.png') ?>" 
                              class="card-img-top" alt="<?= htmlspecialchars($course['title']) ?>"
                              style="max-height: 400px; object-fit: cover;">
                         <div class="card-body">
@@ -94,12 +52,12 @@ try {
                                 </li>
                             </ul>
                             <div class="mt-4">
-                                <?php if ($user): // Only show button if user is logged in ?>
+                                <?php if ($user): ?>
                                     <?php if ($isEnrolled): ?>
                                         <a href="#" class="btn btn-success w-100 disabled">Enrolled <i class="fas fa-check"></i></a>
                                         <button type="button" class="btn btn-primary w-100 mt-2">Continue Learning</button>
                                     <?php else: ?>
-                                        <form action="/Shaposhnikov_project/actions/user/EnrollCourse.php" method="POST">
+                                        <form action="<?= BASE_PATH ?>/actions/auth/EnrollCourse.php" method="POST">
                                             <input type="hidden" name="course_id" value="<?= htmlspecialchars($courseId) ?>">
                                             <button type="submit" class="btn btn-primary w-100">Enroll Now</button>
                                         </form>
@@ -112,31 +70,10 @@ try {
                     </div>
 
                     <?php if (!empty($reviews)): ?>
-                        <div class="card mt-4">
-                            <div class="card-body">
-                                <h5 class="card-title">Customer Reviews</h5>
-                                <?php foreach ($reviews as $review): ?>
-                                    <div class="mb-3 pb-3 border-bottom">
-                                        <p class="mb-1">
-                                            <strong><?= htmlspecialchars($review['first_name'] . ' ' . $review['last_name']) ?></strong>
-                                            <small class="text-muted float-end">
-                                                <?= htmlspecialchars(date('M d, Y', strtotime($review['created_at']))) ?>
-                                            </small>
-                                        </p>
-                                        <div>
-                                            <?php for ($i = 1; $i <= 5; $i++): ?>
-                                                <i class="fa<?= ($i <= $review['rating']) ? 's' : 'r' ?> fa-star text-warning"></i>
-                                            <?php endfor; ?>
-                                        </div>
-                                        <p class="mt-2">"<?= nl2br(htmlspecialchars($review['text'])) ?>"</p>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
+                        <?php include __DIR__ . '/partials/reviews_block.php'; ?>
                     <?php elseif ($course): ?>
                         <div class="alert alert-info mt-4">No reviews yet for this course.</div>
                     <?php endif; ?>
-
                 </div>
             </div>
         <?php else: ?>
@@ -145,10 +82,4 @@ try {
             </div>
         <?php endif; ?>
     </main>
-
-    <!-- Footer -->
     <?php include 'partials/footer.php'; ?>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>

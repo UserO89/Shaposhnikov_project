@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="editProfileForm" action="/Shaposhnikov_project/actions/user/UpdateProfile.php" method="post">
+                <form id="editProfileForm" action="/Shaposhnikov_project/actions/auth/UpdateProfile.php" method="post">
                     <div class="mb-3">
                         <label for="edit_username" class="form-label">Username</label>
                         <input type="text" class="form-control" id="edit_username" name="username" value="<?php echo htmlspecialchars($user['username']); ?>" required minlength="3" maxlength="50">
