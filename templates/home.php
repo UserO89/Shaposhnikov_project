@@ -11,13 +11,13 @@ $conn = $db->getConnection();
 $courseObj = new Course();
 $courses = $courseObj->getTopRated(3);
 
-// Fetch reviews along with user names
 $stmt = $conn->query("SELECT r.text, r.rating, u.first_name, u.last_name FROM reviews r JOIN users u ON r.user_id = u.id ORDER BY r.created_at DESC LIMIT 5");
 $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <link rel="stylesheet" href="<?= htmlspecialchars(BASE_PATH) ?>/assets/css/home.css">
 
 <section class="hero text-center text-light d-flex align-items-center justify-content-center">
+    <div class="hero__overlay"></div>
     <div>
         <?php renderFlashMessage()?>
         <h1 class="display-4">Master New Skills Online</h1>
@@ -99,4 +99,11 @@ $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </section>
     </main>
     <?php include 'partials/footer.php'; ?>
+<?php if (isset($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'admin'): ?>
+    <?php 
+    $categories = (new Course())->getAllCategories();
+    include __DIR__ . '/modals/admin/edit_course.php'; 
+    ?>
+    <script src="<?= BASE_PATH ?>/assets/js/admin_courses.js"></script>
+<?php endif; ?>
 

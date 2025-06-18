@@ -5,6 +5,8 @@
     background-position: center;
     color: white;
     text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
 }
 
 .hero h1 {
@@ -13,4 +15,19 @@
 
 .hero p {
     font-size: 1.25rem;
+}
+
+.hero__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5); /* Adjust opacity for darkness */
+    z-index: 1;
+}
+
+.hero > div:not(.hero__overlay) {
+    position: relative;
+    z-index: 2;
 }

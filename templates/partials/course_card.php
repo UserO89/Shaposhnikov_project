@@ -12,9 +12,12 @@
                             <button class="btn btn-sm btn-primary" onclick="event.preventDefault(); editCourse(<?= htmlspecialchars(json_encode($course)) ?>)">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-sm btn-danger" onclick="event.preventDefault(); deleteCourse(<?= $course['id'] ?>)">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <form method="POST" action="<?= BASE_PATH ?>/actions/admin/courses/delete.php" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this course?');">
+                                <input type="hidden" name="id" value="<?= $course['id'] ?>">
+                                <button class="btn btn-sm btn-danger" type="submit">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
                         </div>
                     <?php endif; ?>
                 </div>

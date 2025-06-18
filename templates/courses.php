@@ -45,3 +45,11 @@ try {
   </main>
   <?php include 'partials/footer.php'; ?>
 
+<?php if (isset($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'admin'): ?>
+    <?php 
+    $categories = (new Course())->getAllCategories();
+    include __DIR__ . '/modals/admin/edit_course.php'; 
+    ?>
+    <script src="<?= BASE_PATH ?>/assets/js/admin_courses.js"></script>
+<?php endif; ?>
+

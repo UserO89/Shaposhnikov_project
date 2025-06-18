@@ -17,11 +17,6 @@ $isEnrolled = $user ? $userObj->isUserEnrolled($user['id'], $courseId) : false;
 ?>
 
     <main class="container my-5">
-        <section class="hero text-center text-light d-flex align-items-center justify-content-center">
-            <div>
-                <?php renderFlashMessage() ?>
-                <h1 class="display-4">Course: <?= htmlspecialchars($course['title']) ?></h1>
-            </div>
         </section>
         <?php if ($course): ?>
             <div class="row">
