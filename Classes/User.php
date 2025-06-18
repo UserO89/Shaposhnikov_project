@@ -14,7 +14,6 @@ class User extends Database
         $this->conn = $this->getConnection();
     }
 
-    // Получить пользователя по ID
     public function getById($id)
     {
         try {
@@ -27,20 +26,7 @@ class User extends Database
         }
     }
 
-    // Получить пользователя по email
-    public function getByEmail($email)
-    {
-        try {
-            $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = ?");
-            $stmt->execute([$email]);
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error fetching user by email: " . $e->getMessage());
-            throw new Exception('Could not fetch user by email.');
-        }
-    }
 
-    // Получить пользователя по username
     public function getByUsername($username)
     {
         try {
@@ -53,7 +39,6 @@ class User extends Database
         }
     }
 
-    // Получить всех пользователей
     public function getAll()
     {
         try {
@@ -65,19 +50,16 @@ class User extends Database
         }
     }
 
-    // Создать нового пользователя
     public function create($data)
     {
         try {
-            // Валидация данных
+            $this->conn->beginTransaction();
             if (!$this->validator->validateUserData($data)) {
                 throw new Exception($this->validator->getFirstError());
             }
 
-            // Хеширование пароля
             $hashed_password = password_hash($data['password'], PASSWORD_DEFAULT);
 
-            // Подготовка SQL запроса
             $sql = "INSERT INTO users (username, first_name, last_name, email, password, role, created_at) 
                     VALUES (?, ?, ?, ?, ?, ?, NOW())";
             
@@ -91,31 +73,30 @@ class User extends Database
                 $data['role'] ?? 'student'
             ]);
 
-            return $this->conn->lastInsertId();
+            $lastId = $this->conn->lastInsertId();
+            $this->conn->commit();
+            return $lastId;
         } catch (Exception $e) {
+            $this->conn->rollBack();
             throw new Exception('Error creating user: ' . $e->getMessage());
         }
     }
 
-    // Обновить данные пользователя
     public function update($id, $data)
     {
         try {
-            // Добавляем ID в данные для валидации
+            $this->conn->beginTransaction();
             $data['id'] = $id;
 
-            // Валидация данных
             if (!$this->validator->validateUserData($data, true)) {
                 throw new Exception($this->validator->getFirstError());
             }
 
-            // Проверка существования пользователя
             $user = $this->getById($id);
             if (!$user) {
                 throw new Exception('User not found');
             }
 
-            // Подготовка данных для обновления
             $updateData = [
                 'username' => $data['username'],
                 'first_name' => $data['first_name'],
@@ -123,12 +104,10 @@ class User extends Database
                 'email' => $data['email']
             ];
 
-            // Если указан новый пароль, добавляем его в обновление
             if (!empty($data['password'])) {
                 $updateData['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
             }
 
-            // Формирование SQL запроса
             $sql = "UPDATE users SET ";
             $params = [];
             foreach ($updateData as $key => $value) {
@@ -139,17 +118,16 @@ class User extends Database
             $sql .= " WHERE id = ?";
             $params[] = $id;
 
-            // Выполнение запроса
             $stmt = $this->conn->prepare($sql);
             $stmt->execute($params);
-
+            $this->conn->commit();
             return true;
         } catch (Exception $e) {
+            $this->conn->rollBack();
             throw new Exception('Error updating user: ' . $e->getMessage());
         }
     }
 
-    // Удалить пользователя
     public function delete($id)
     {
         try {
@@ -160,7 +138,6 @@ class User extends Database
         }
     }
 
-    // Получить количество пользователей
     public function getCount()
     {
         try {
@@ -172,23 +149,7 @@ class User extends Database
         }
     }
 
-    // Получить пользователей с пагинацией
-    public function getPaginated($page = 1, $perPage = 10)
-    {
-        try {
-            $offset = ($page - 1) * $perPage;
-            $sql = "SELECT * FROM users ORDER BY created_at DESC LIMIT ? OFFSET ?";
-            
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute([$perPage, $offset]);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error fetching paginated users: " . $e->getMessage());
-            throw new Exception('Could not fetch paginated users.');
-        }
-    }
 
-    // Получить последних N пользователей
     public function getRecentUsers($limit = 5)
     {
         try {
@@ -223,7 +184,7 @@ class User extends Database
             return (bool)$stmt->fetchColumn();
         } catch (PDOException $e) {
             error_log("Error checking user enrollment: " . $e->getMessage());
-            return false; // В случае ошибки считаем, что не записан
+            return false;
         }
     }
 }

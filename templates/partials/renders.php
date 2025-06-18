@@ -13,9 +13,6 @@ function renderStatCard($icon, $value, $label, $bg) {
     ";
 }
 
-// Функция-хелпер для рендеринга flash-сообщений
-// Зависит от класса SessionMessage для получения сообщений из сессии.
-// Предполагается, что класс SessionMessage уже подключен и сессия запущена.
 function renderFlashMessage() {
     if (class_exists('SessionMessage') && SessionMessage::hasMessages()) {
         $message = SessionMessage::get();

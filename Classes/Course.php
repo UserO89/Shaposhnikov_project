@@ -8,7 +8,6 @@ class Course extends Database
         parent::__construct();
     }
 
-    // Вспомогательный метод для получения ID категории по имени
     private function getCategoryIdByName($categoryName)
     {
         $stmt = $this->getConnection()->prepare("SELECT id FROM categories WHERE name = ?");
@@ -17,7 +16,6 @@ class Course extends Database
         return $result ? $result['id'] : null;
     }
 
-    // Получить курс по ID
     public function getById($id)
     {
         $stmt = $this->getConnection()->prepare("SELECT c.*, cat.name AS category FROM courses c JOIN categories cat ON c.category_id = cat.id WHERE c.id = ?");
@@ -25,7 +23,6 @@ class Course extends Database
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Получить курс по названию
     public function getByTitle($title)
     {
         $stmt = $this->getConnection()->prepare("SELECT c.*, cat.name AS category FROM courses c JOIN categories cat ON c.category_id = cat.id WHERE c.title = ?");
@@ -46,21 +43,17 @@ class Course extends Database
     public function create($data)
     {
         try {
-            // Валидация данных
             $this->validateCourseData($data);
 
-            // Получить category_id по имени
             $categoryId = $this->getCategoryIdByName($data['category']);
             if (is_null($categoryId)) {
                 throw new Exception('Invalid category selected.');
             }
 
-            // Проверка на существующий курс с таким названием
             if ($this->getByTitle($data['title'])) {
                 throw new Exception('Course with this title already exists');
             }
 
-            // Подготовка SQL запроса
             $sql = "INSERT INTO courses (title, description, category_id, duration, price, image_url, created_at) 
                     VALUES (?, ?, ?, ?, ?, ?, NOW())";
             
@@ -80,46 +73,38 @@ class Course extends Database
         }
     }
 
-    // Обновить данные курса
-    public function update($id, $data) //------------------------------------------------
+    public function update($id, $data)
     {
         try {
-            // Валидация данных
             $this->validateCourseData($data, true);
 
-            // Получить category_id по имени
             $categoryId = $this->getCategoryIdByName($data['category']);
             if (is_null($categoryId)) {
                 throw new Exception('Invalid category selected.');
             }
 
-            // Проверка существования курса
             $course = $this->getById($id);
             if (!$course) {
                 throw new Exception('Course not found');
             }
 
-            // Проверка на существующий курс с таким названием (исключая текущий курс)
             $existingCourse = $this->getByTitle($data['title']);
             if ($existingCourse && $existingCourse['id'] != $id && $existingCourse['category_id'] == $categoryId) {
                 throw new Exception('Course with this title already exists in this category.');
             }
 
-            // Подготовка данных для обновления
             $updateData = [
                 'title' => $data['title'],
                 'description' => $data['description'],
-                'category_id' => $categoryId, // Обновляем category_id
+                'category_id' => $categoryId,
                 'duration' => $data['duration'],
                 'price' => $data['price']
             ];
 
-            // Если указано новое изображение, добавляем его в обновление
             if (!empty($data['image'])) {
                 $updateData['image_url'] = $data['image'];
             }
 
-            // Формирование SQL запроса
             $sql = "UPDATE courses SET ";
             $params = [];
             foreach ($updateData as $key => $value) {
@@ -130,7 +115,6 @@ class Course extends Database
             $sql .= " WHERE id = ?";
             $params[] = $id;
 
-            // Выполнение запроса
             $stmt = $this->getConnection()->prepare($sql);
             $stmt->execute($params);
 
@@ -140,7 +124,6 @@ class Course extends Database
         }
     }
 
-    // Удалить курс
     public function delete($id)
     {
         try {
@@ -151,12 +134,10 @@ class Course extends Database
         }
     }
 
-    // Валидация данных курса
     private function validateCourseData($data, $isUpdate = false)
     {
         $errors = [];
 
-        // Проверка обязательных полей
         if (empty($data['title'])) {
             $errors[] = 'Title is required';
         }
@@ -173,7 +154,6 @@ class Course extends Database
             $errors[] = 'Valid price is required';
         }
 
-        // Проверка длины полей
         if (strlen($data['title']) > 255) {
             $errors[] = 'Title must be less than 255 characters';
         }
@@ -181,12 +161,10 @@ class Course extends Database
             $errors[] = 'Description must be less than 1000 characters';
         }
 
-        // Проверка формата цены
         if (!is_numeric($data['price'])) {
             $errors[] = 'Price must be a number';
         }
 
-        // Проверка допустимых категорий (теперь через базу данных)
         $categoryId = $this->getCategoryIdByName($data['category']);
         if (is_null($categoryId)) {
             $errors[] = 'Invalid category selected';
@@ -197,19 +175,10 @@ class Course extends Database
         }
     }
 
-    // Получить количество курсов  -----------------------------------------------------------------------------
     public function getCount()
     {
         $stmt = $this->getConnection()->query("SELECT COUNT(*) FROM courses");
         return $stmt->fetchColumn();
-    }
-
-    public function getRecentCourses($limit = 5)
-    {
-        $stmt = $this->getConnection()->prepare("SELECT * FROM courses ORDER BY created_at DESC LIMIT ?");
-        $stmt->bindValue(1, $limit, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getCoursesCountLast30Days()
@@ -218,9 +187,6 @@ class Course extends Database
         return $stmt->fetchColumn();
     }
 
-
-
-    // Получить курсы с самым высоким рейтингом (пример) -----------------------------------------------------
     public function getTopRated($limit = 3)
     {
         $sql = "SELECT c.*, cat.name AS category, AVG(r.rating) as avg_rating 
@@ -236,7 +202,6 @@ class Course extends Database
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Получить курсы с применением фильтров
     public function getFilteredCourses($filters = [])
     {
         $sql = "SELECT c.*, cat.name AS category 
@@ -279,14 +244,12 @@ class Course extends Database
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Получить все категории
     public function getAllCategories()
     {
         $stmt = $this->getConnection()->query("SELECT * FROM categories ORDER BY name ASC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Получить отзывы по курсу
     public function getReviews($courseId)
     {
         $stmt = $this->getConnection()->prepare('
@@ -300,7 +263,6 @@ class Course extends Database
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Проверить, записан ли пользователь на курс
     public function getActiveCoursesByUserId(int $userId): array
     {
         try {

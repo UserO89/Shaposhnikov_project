@@ -25,9 +25,7 @@ $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <a href="/Shaposhnikov_project/templates/courses.php" class="btn btn-lg btn-primary">Browse Courses</a>
     </div>
 </section>
-
 <main class="container my-5">
-    <!-- About Us -->
     <section class="my-5 px-3 py-4 bg-white rounded shadow-sm">
         <div class="row align-items-center">
             <div class="col-md-6">
@@ -94,7 +92,6 @@ $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </button>
         </div>
     </section>
-
     <section class="text-center my-5 py-5 bg-primary text-white rounded">
         <h2 class="mb-3">Ready to level up your career?</h2>
         <p class="mb-4">Join thousands of students who are growing with CourseCo.</p>

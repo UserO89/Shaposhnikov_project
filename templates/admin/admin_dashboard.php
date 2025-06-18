@@ -1,9 +1,8 @@
 <?php
-require_once __DIR__ . '/../../config/app.php'; 
+require_once __DIR__ . '/../partials/header.php';
 require_once __DIR__ . '/../../Classes/Auth.php';
 require_once __DIR__ . '/../../Classes/User.php';
 require_once __DIR__ . '/../../Classes/Course.php';
-require_once __DIR__ . '/../../Classes/SessionMessage.php';
 
 $auth = new Auth();
 Auth::requireAdmin();
@@ -17,39 +16,13 @@ $usersLast30Days = $user->getUsersCountLast30Days();
 $coursesLast30Days = $course->getCoursesCountLast30Days();
 $recentUsers = $user->getRecentUsers(5); 
 
-require_once __DIR__ . '/../partials/header.php';
 require_once __DIR__ . '/../partials/renders.php';
 ?>
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Sidebar -->
-        <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
-            <div class="position-sticky pt-3">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active text-white" href="<?= BASE_PATH ?>/templates/admin/admin_dashboard.php">
-                            <i class="fas fa-tachometer-alt me-2"></i>
-                            Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="<?= BASE_PATH ?>/templates/admin/admin_users.php">
-                            <i class="fas fa-users me-2"></i>
-                            Users
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="<?= BASE_PATH ?>/templates/admin/admin_courses.php">
-                            <i class="fas fa-book me-2"></i>
-                            Courses
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+        <?php include __DIR__ . '/../partials/admin_sidebar.php'; ?>
 
-        <!-- Main content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Admin Dashboard</h1>

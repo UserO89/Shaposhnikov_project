@@ -10,12 +10,10 @@ class Validator extends Database
         parent::__construct();
     }
 
-    // Валидация данных пользователя
     public function validateUserData($data, $isUpdate = false)
     {
         $this->errors = [];
 
-        // Валидация username
         if (empty($data['username'])) {
             $this->errors['username'] = 'Username is required';
         } elseif (strlen($data['username']) < 3) {
@@ -24,28 +22,24 @@ class Validator extends Database
             $this->errors['username'] = 'Username must not exceed 50 characters';
         }
 
-        // Валидация email
         if (empty($data['email'])) {
             $this->errors['email'] = 'Email is required';
         } elseif (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
             $this->errors['email'] = 'Invalid email format';
         }
 
-        // Валидация имени
         if (empty($data['first_name'])) {
             $this->errors['first_name'] = 'First name is required';
         } elseif (strlen($data['first_name']) > 50) {
             $this->errors['first_name'] = 'First name must not exceed 50 characters';
         }
 
-        // Валидация фамилии
         if (empty($data['last_name'])) {
             $this->errors['last_name'] = 'Last name is required';
         } elseif (strlen($data['last_name']) > 50) {
             $this->errors['last_name'] = 'Last name must not exceed 50 characters';
         }
 
-        // Валидация пароля
         if (!$isUpdate || !empty($data['password'])) {
             if (empty($data['password'])) {
                 $this->errors['password'] = 'Password is required';
@@ -56,7 +50,6 @@ class Validator extends Database
             }
         }
 
-        // Проверка уникальности username и email
         if (!empty($data['username']) || !empty($data['email'])) {
             $this->checkUniqueFields($data, $isUpdate);
         }
@@ -64,13 +57,11 @@ class Validator extends Database
         return empty($this->errors);
     }
 
-    // Проверка уникальности полей
     private function checkUniqueFields($data, $isUpdate)
     {
         $conn = $this->getConnection();
         $userId = $isUpdate ? $data['id'] : null;
 
-        // Проверка username
         if (!empty($data['username'])) {
             $sql = "SELECT id FROM users WHERE username = ?";
             $params = [$data['username']];
@@ -88,7 +79,6 @@ class Validator extends Database
             }
         }
 
-        // Проверка email
         if (!empty($data['email'])) {
             $sql = "SELECT id FROM users WHERE email = ?";
             $params = [$data['email']];
@@ -107,13 +97,11 @@ class Validator extends Database
         }
     }
 
-    // Получение ошибок
     public function getErrors()
     {
         return $this->errors;
     }
 
-    // Получение первой ошибки
     public function getFirstError()
     {
         return reset($this->errors);

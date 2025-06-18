@@ -11,17 +11,34 @@ body {
   }
   .hero {
     height: 60vh;
-    background-image: url('/Shaposhnikov_project/assets/img/banner.jpg'); /* Keep absolute for now to ensure it works */
+    background-image: url('/Shaposhnikov_project/assets/img/banner.jpg');
     background-size: cover;
     background-position: center;
     color: white;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    border-radius: 2rem;
+    overflow: hidden;
+    position: relative;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.45);
+    z-index: 1;
   }
   .hero h1 {
     font-size: 3rem;
+    font-weight: bold;
+    position: relative;
+    z-index: 2;
   }
   .hero p {
     font-size: 1.25rem;
+    position: relative;
+    z-index: 2;
   }
   .card {
     border: none;

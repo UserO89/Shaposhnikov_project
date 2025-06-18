@@ -42,7 +42,7 @@ require_once __DIR__ . '/renders.php';
       <div class="navbar-nav">
         <?php if (isset($_SESSION['user'])): ?>
             <li class="nav-item">
-                <span class="nav-link text-light"><?php echo htmlspecialchars($_SESSION['user']['username']); ?></span>
+                <span class="nav-link text-light"><?= htmlspecialchars($_SESSION['user']['username']); ?></span>
             </li>
             <li class="nav-item">
                 <form action="<?= BASE_PATH ?>/actions/auth/Logout.php" method="POST">

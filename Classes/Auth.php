@@ -13,9 +13,11 @@ class Auth extends Database
     public function getUser()
     {
         if ($this->user !== null) {
-            return $this->user;}
+            return $this->user;
+        }
         if (!isset($_SESSION['user']['id'])) {
-            return null;}
+            return null;
+        }
         $stmt = $this->getConnection()->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->execute([$_SESSION['user']['id']]);
         $this->user = $stmt->fetch();
@@ -42,7 +44,8 @@ class Auth extends Database
     {
         if (!$this->hasRole($role)) {
             header('Location: /templates/NotFound.php');
-            exit();}
+            exit();
+        }
     }
 
     public static function requireAdmin()
@@ -64,9 +67,11 @@ class Auth extends Database
                 'username' => $user['username'],
                 'role' => $user['role']
             ];
-            return $user;}
+            return $user;
+        }
             else {
-            return false;}
+            return false;
+        }
     }
 
     public function logout()

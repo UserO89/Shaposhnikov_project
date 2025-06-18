@@ -30,7 +30,6 @@ try {
     <h1 class="display-4 mb-4">My Profile</h1>
     
     <?php 
-    // Отображение сообщения об ошибке, если есть
     if ($errorMessage): ?>
         <div class="alert alert-danger" role="alert">
             <?= htmlspecialchars($errorMessage) ?>
@@ -71,6 +70,11 @@ try {
                                 <i class="fas fa-sign-out-alt me-2"></i>Logout
                             </button>
                         </form>
+                        <form action="<?= BASE_PATH ?>/actions/auth/delete_account.php" method="POST" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+                            <button type="submit" class="btn btn-danger w-100 mt-2">
+                                <i class="fas fa-trash-alt me-2"></i>Delete Account
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -95,9 +99,6 @@ try {
                                 <div class="card-body">
                                     <h5 class="card-title"><?= htmlspecialchars($course['title']) ?></h5>
                                     <p class="card-text"><?= htmlspecialchars($course['description']) ?></p>
-                                    <div class="progress mb-3">
-                                        <div class="progress-bar" role="progressbar" style="width: <?= htmlspecialchars((string)$course['progress']) ?>%" aria-valuenow="<?= htmlspecialchars((string)$course['progress']) ?>" aria-valuemin="0" aria-valuemax="100"><?= htmlspecialchars((string)$course['progress']) ?>% Complete</div>
-                                    </div>
                                     <a href="#" class="btn btn-primary">Continue Learning</a>
                                 </div>
                             </div>
