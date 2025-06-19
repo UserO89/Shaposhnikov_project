@@ -7,8 +7,8 @@ require_once __DIR__ . '/../../../Classes/SessionMessage.php';
 $auth = new Auth();
 Auth::requireAdmin();
 
-if (isset($_GET['id'])) {
-    $user_id = $_GET['id'];
+if (isset($_POST['id'])) {
+    $user_id = $_POST['id'];
 
     $user = new User();
     if ($user->delete($user_id)) {

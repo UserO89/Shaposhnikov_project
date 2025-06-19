@@ -1,21 +1,19 @@
 <?php
-session_start();
+require_once __DIR__ . '/../../../config/app.php';
+require_once __DIR__ . '/../../../Classes/SessionMessage.php';
 require_once __DIR__ . '/../../../Classes/Auth.php';
 require_once __DIR__ . '/../../../Classes/User.php';
 require_once __DIR__ . '/../../../Classes/Validator.php';
-require_once __DIR__ . '/../../../Classes/SessionMessage.php';
 
 Auth::requireAdmin();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        // Get user ID
         $id = filter_input(INPUT_POST, 'user_id', FILTER_VALIDATE_INT);
         if (!$id) {
             throw new Exception('Invalid user ID');
         }
 
-        // Prepare user data
         $userData = [
             'id' => $id,
             'username' => trim($_POST['username'] ?? ''),
@@ -25,12 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'role' => $_POST['role'] ?? 'student'
         ];
 
-        // Add password if provided
         if (!empty($_POST['password'])) {
             $userData['password'] = trim($_POST['password']);
         }
 
-        // Validate data
         $validator = new Validator();
         if (!$validator->validateUserData($userData, true)) {
             SessionMessage::set('danger', $validator->getFirstError());
@@ -38,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit();
         }
 
-        // Update user
         $user = new User();
         if ($user->update($id, $userData)) {
             SessionMessage::set('success', 'User updated successfully');
@@ -52,5 +47,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     SessionMessage::set('danger', 'Invalid request method');
 }
 
-header('Location: /Shaposhnikov_project/templates/admin/admin_users.php');
+header('Location:' . BASE_PATH . '/templates/admin/admin_users.php');
 exit(); 

@@ -52,10 +52,10 @@ $users = $user->getAll();
                                 </span>
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-primary" onclick="editUser(<?= htmlspecialchars(json_encode($user)); ?>)">
+                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editUserModal<?= $user['id'] ?>">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteUser(<?= $user['id']; ?>)">
+                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteUserModal<?= $user['id'] ?>">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>
@@ -63,11 +63,14 @@ $users = $user->getAll();
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+                <?php foreach ($users as $user): ?>
+                    <?php include __DIR__ . '/../modals/admin/delete_user.php'; ?>
+                <?php endforeach; ?>
             </div>
         </main>
     </div>
 </div>
-<script src="<?= BASE_PATH ?>/assets/js/admin_users.js"></script>
 <?php require_once __DIR__ . '/../modals/admin/add_user.php'; ?>
 <?php require_once __DIR__ . '/../modals/admin/edit_user.php'; ?>
+<?php require_once __DIR__ . '/../modals/admin/delete_user.php'; ?>
 <?php require_once __DIR__ . '/../partials/footer.php'; ?> 

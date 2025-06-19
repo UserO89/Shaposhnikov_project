@@ -24,8 +24,7 @@ $isEnrolled = $user ? $userObj->isUserEnrolled($user['id'], $courseId) : false;
                     <h1 class="mb-4"><?= htmlspecialchars($course['title']) ?></h1>
                     <div class="card mb-4">
                         <img src="<?= htmlspecialchars($course['image_url'] ?: BASE_PATH . '/assets/img/placeholder.png') ?>" 
-                             class="card-img-top" alt="<?= htmlspecialchars($course['title']) ?>"
-                             style="max-height: 400px; object-fit: cover;">
+                             class="card-img-top" alt="<?= htmlspecialchars($course['title']) ?>">
                         <div class="card-body">
                             <h5 class="card-title">Description</h5>
                             <p class="card-text"><?= nl2br(htmlspecialchars($course['description'])) ?></p>

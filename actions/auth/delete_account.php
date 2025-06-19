@@ -1,9 +1,8 @@
 <?php
-
 require_once __DIR__ . '/../../config/app.php';
+require_once __DIR__ . '/../../../Classes/SessionMessage.php';
 require_once __DIR__ . '/../../Classes/Auth.php';
 require_once __DIR__ . '/../../Classes/User.php';
-require_once __DIR__ . '/../../Classes/SessionMessage.php';
 
 $auth = new Auth();
 if (!$auth->isLoggedIn()) {
